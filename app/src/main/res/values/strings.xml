@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">oboe_mock</string>
+    <string name="action_toggle_mute">Toggle volume</string>
 </resources>
