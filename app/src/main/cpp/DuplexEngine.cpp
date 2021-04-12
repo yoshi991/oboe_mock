@@ -15,6 +15,7 @@
  */
 
 #include "DuplexEngine.h"
+#include "logging_macros.h"
 
 DuplexEngine::DuplexEngine() {
 }
@@ -85,15 +86,15 @@ oboe::AudioStreamBuilder DuplexEngine::defaultBuilder() {
             ->setFormat(mFormat);
 }
 
-void DuplexEngine::openInStream() {
-    defaultBuilder().setDirection(oboe::Direction::Input)
+oboe::Result DuplexEngine::openInStream() {
+    return defaultBuilder().setDirection(oboe::Direction::Input)
             ->setDeviceId(mInputDeviceId)
             ->setChannelCount(mInputChannelCount)
             ->openManagedStream(inStream);
 }
 
-void DuplexEngine::openOutStream() {
-    defaultBuilder().setDirection(oboe::Direction::Output)
+oboe::Result DuplexEngine::openOutStream() {
+    return defaultBuilder().setDirection(oboe::Direction::Output)
             ->setCallback(mCallback.get())
             ->setDeviceId(mOutputDeviceId)
             ->setChannelCount(mOutputChannelCount)

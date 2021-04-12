@@ -55,8 +55,8 @@ private:
     oboe::ManagedStream outStream;
     std::unique_ptr<oboe::AudioStreamCallback> mCallback;
 
-    void openInStream();
-    void openOutStream();
+    oboe::Result openInStream();
+    oboe::Result openOutStream();
 
     oboe::Result startStreams();
     oboe::Result stopStreams();
