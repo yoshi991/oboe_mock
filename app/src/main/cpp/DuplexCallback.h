@@ -18,60 +18,94 @@
 
 #include <oboe/Oboe.h>
 
-// This callback handles mono in, stereo out synchronized audio passthrough.
-// It takes a function which operates on two pointers (beginning and end)
-// of underlying data.
+#include "logging_macros.h"
 
-template<class numeric_type>
 class DuplexCallback : public oboe::AudioStreamCallback {
 public:
+    DuplexCallback() {};
+    ~DuplexCallback();
 
-    DuplexCallback(oboe::AudioStream &inStream,
-                   std::function<void(numeric_type *, numeric_type *)> fun,
-                   size_t buffer_size, 
-                   std::function<void(void)> restartFunction) :
-            kBufferSize(buffer_size), inRef(inStream), f(fun), restart(restartFunction) {}
+    void setRecordingDeviceId(int32_t deviceId);
+    void setPlaybackDeviceId(int32_t deviceId);
+    bool setAudioApi(oboe::AudioApi);
+    bool isAAudioRecommended();
 
-    oboe::DataCallbackResult
-    onAudioReady(oboe::AudioStream *outputStream, void *audioData, int32_t numFrames) override {
-        auto *outputData = static_cast<numeric_type *>(audioData);
-        auto outputChannelCount = outputStream->getChannelCount();
+    bool openStreams();
+    bool closeStreams();
 
-        // Silence first to simplify glitch detection
-        std::fill(outputData, outputData + numFrames * outputChannelCount, 0);
-        oboe::ResultWithValue<int32_t> result = inRef.read(inputBuffer.get(), numFrames, 0);
-        int32_t framesRead = result.value();
-        if (!result) {
-            inRef.requestStop();
-            return oboe::DataCallbackResult::Stop;
-        }
-        if (mSpinUpCallbacks > 0 && framesRead > 0) {
-            mSpinUpCallbacks--;
-            return oboe::DataCallbackResult::Continue;
-        }
-        f(inputBuffer.get(), inputBuffer.get() + framesRead);
-        for (int i = 0; i < framesRead; i++) {
-            for (size_t j = 0; j < outputChannelCount; j++) {
-                *outputData++ = inputBuffer[i];
-            }
-        }
-        return oboe::DataCallbackResult::Continue;
-    }
+    bool start();
+    bool stop();
 
-    void onErrorAfterClose(oboe::AudioStream *, oboe::Result result) override {
-        inRef.close();
-        if (result == oboe::Result::ErrorDisconnected) {
-            restart();
-        }
-    }
+    /*
+     * oboe::AudioStreamDataCallback interface implementation
+     */
+    oboe::DataCallbackResult onAudioReady(
+        oboe::AudioStream *outputStream, 
+        void *audioData, 
+        int32_t numFrames
+    ) override;
+
+    /*
+     * oboe::AudioStreamErrorCallback interface implementation
+     */
+    void onErrorBeforeClose(oboe::AudioStream *oboeStream, oboe::Result result) override;
+    void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result result) override;
 
 private:
-    int mSpinUpCallbacks = 10; // We will let the streams sync for the first few valid frames
-    const size_t kBufferSize;
-    oboe::AudioStream &inRef;
-    std::function<void(numeric_type *, numeric_type *)> f;
-    std::function<void(void)> restart;
-    std::unique_ptr<numeric_type[]> inputBuffer = std::make_unique<numeric_type[]>(kBufferSize);
+    const char *kTag = "[DuplexCallback]";
+
+    bool mIsPlaying = false;
+    int32_t mInputDeviceId = oboe::kUnspecified;
+    int32_t mOutputDeviceId = oboe::kUnspecified;
+    const oboe::AudioFormat mFormat = oboe::AudioFormat::Float; // for easier processing
+    oboe::AudioApi mAudioApi = oboe::AudioApi::AAudio;
+    int32_t mSampleRate = oboe::kUnspecified;
+    const int32_t mInputChannelCount = oboe::ChannelCount::Stereo;
+    const int32_t mOutputChannelCount = oboe::ChannelCount::Stereo;
+
+    static constexpr int32_t kNumCallbacksToDrain = 20;
+    static constexpr int32_t kNumCallbacksToDiscard = 30;
+    // let input fill back up, usually 0 or 1
+    int32_t mNumInputBurstsCushion = 1;
+
+    // We want to reach a state where the input buffer is empty and
+    // the output buffer is full.
+    // These are used in order.
+    // Drain several callback so that input is empty.
+    int32_t mCountCallbacksToDrain = kNumCallbacksToDrain;
+    // Let the input fill back up slightly so we don't run dry.
+    int32_t mCountInputBurstsCushion = mNumInputBurstsCushion;
+    // Discard some callbacks so the input and output reach equilibrium.
+    int32_t mCountCallbacksToDiscard = kNumCallbacksToDiscard;
+
+    std::shared_ptr<oboe::AudioStream> mInputStream;
+    std::shared_ptr<oboe::AudioStream> mOutputStream;
+
+    int32_t mBufferSize = 0;
+    std::unique_ptr<float[]> mInputBuffer;
+
+    oboe::AudioStreamBuilder createDefaultBuilder();
+    oboe::AudioStreamBuilder createInputBuilder();
+    oboe::AudioStreamBuilder createOutputBuilder();
+
+    oboe::Result openInputStream();
+    oboe::Result openOutputStream();
+
+    void closeStream(std::shared_ptr<oboe::AudioStream> &stream);
+    void closeInputStream();
+    void closeOutputStream();
+
+    void setInputBufferSize();
+
+    oboe::DataCallbackResult onBothStreamsReady(
+        std::shared_ptr<oboe::AudioStream> inputStream,
+        const void *inputData,
+        int   numInputFrames,
+        std::shared_ptr<oboe::AudioStream> outputStream,
+        void *outputData,
+        int   numOutputFrames
+    );
+
 };
 
 #endif //ANDROID_FXLAB_DUPLEXCALLBACK_H

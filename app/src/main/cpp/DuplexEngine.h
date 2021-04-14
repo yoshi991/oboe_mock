@@ -27,46 +27,23 @@
 
 class DuplexEngine {
 public:
-    DuplexEngine();
+    DuplexEngine() {};
     virtual ~DuplexEngine() = default;
 
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
-    bool setAudioApi(oboe::AudioApi);
+    bool setAudioApi(oboe::AudioApi api);
     bool isAAudioRecommended(void);
 
-    bool beginStreams();
-    bool finishStreams();
-
-    std::variant<FunctionList<int16_t *>, FunctionList<float *>> functionList{
-            std::in_place_type<FunctionList<int16_t *>>};
+    bool requestStart();
+    bool requestStop();
 
 private:
-    bool mIsPlaying = false;
-    int32_t mInputDeviceId = oboe::kUnspecified;
-    int32_t mOutputDeviceId = oboe::kUnspecified;
-    const oboe::AudioFormat mFormat = oboe::AudioFormat::Float; // for easier processing
-    oboe::AudioApi mAudioApi = oboe::AudioApi::AAudio;
-    int32_t mSampleRate = oboe::kUnspecified;
-    const int32_t mInputChannelCount = oboe::ChannelCount::Stereo;
-    const int32_t mOutputChannelCount = oboe::ChannelCount::Stereo;
+    DuplexCallback mDuplexCallback;
 
-    oboe::ManagedStream inStream;
-    oboe::ManagedStream outStream;
-    std::unique_ptr<oboe::AudioStreamCallback> mCallback;
-
-    oboe::Result openInStream();
-    oboe::Result openOutStream();
-
-    oboe::Result startStreams();
-    oboe::Result stopStreams();
-
-    oboe::AudioStreamBuilder defaultBuilder();
-
-    template<class numeric>
-    void createCallback();
+    // oboe::Result startStreams();
+    // oboe::Result stopStreams();
 
 };
-
 
 #endif //EFFECTS_APP_DUPLEXSTREAM_H

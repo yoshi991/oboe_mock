@@ -31,6 +31,7 @@ JNIEXPORT jboolean JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_create(
     JNIEnv *env, jclass) {
     if (engine != nullptr) return JNI_TRUE;
+
     engine = new DuplexEngine();
     return (engine != nullptr) ? JNI_TRUE : JNI_FALSE;
 }
@@ -39,6 +40,7 @@ JNIEXPORT void JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_delete(
     JNIEnv *env, jclass) {
     if (!engine) return;
+
     delete engine;
     engine = nullptr;
 }
@@ -51,7 +53,7 @@ Java_com_yoshi991_oboe_LiveEffectEngine_requestStart(
         return JNI_FALSE;
     }
 
-    return engine->beginStreams() ? JNI_TRUE : JNI_FALSE;
+    return engine->requestStart() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL
@@ -62,7 +64,7 @@ Java_com_yoshi991_oboe_LiveEffectEngine_requestStop(
         return JNI_FALSE;
     }
 
-    return engine->finishStreams() ? JNI_TRUE : JNI_FALSE;
+    return engine->requestStop() ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL

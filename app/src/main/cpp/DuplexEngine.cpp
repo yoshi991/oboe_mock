@@ -17,106 +17,52 @@
 #include "DuplexEngine.h"
 #include "logging_macros.h"
 
-DuplexEngine::DuplexEngine() {
-}
-
 void DuplexEngine::setRecordingDeviceId(int32_t deviceId) {
-    mInputDeviceId = deviceId;
+    mDuplexCallback.setRecordingDeviceId(deviceId);
 }
 
 void DuplexEngine::setPlaybackDeviceId(int32_t deviceId) {
-    mOutputDeviceId = deviceId;
+    mDuplexCallback.setPlaybackDeviceId(deviceId);
 }
 
 bool DuplexEngine::isAAudioRecommended() {
-    return oboe::AudioStreamBuilder::isAAudioRecommended();
+    return mDuplexCallback.isAAudioRecommended();
 }
 
 bool DuplexEngine::setAudioApi(oboe::AudioApi api) {
-    if (mIsPlaying) return false;
-    mAudioApi = api;
+    return mDuplexCallback.setAudioApi(api);
+}
+
+bool DuplexEngine::requestStart() {
+    bool success = mDuplexCallback.openStreams();
+    if (success) {
+        mDuplexCallback.start();
+    }
+    return success;
+}
+
+bool DuplexEngine::requestStop() {
+    mDuplexCallback.stop();
+    mDuplexCallback.closeStreams();
     return true;
 }
 
-bool DuplexEngine::beginStreams() {
-    // This ordering is extremely important
-    openInStream();
-    if (inStream->getFormat() == oboe::AudioFormat::Float) {
-        functionList.emplace<FunctionList<float *>>();
-        createCallback<float_t>();
-    } else if (inStream->getFormat() == oboe::AudioFormat::I16) {
-        createCallback<int16_t>();
-    } else {
-        stopStreams();
-    }
-    openOutStream();
+// oboe::Result DuplexEngine::startStreams() {
+//     oboe::Result result = outStream->requestStart();
+//     int64_t timeoutNanos = 500 * 1000000; // arbitrary 1/2 second
+//     auto currentState = outStream->getState();
+//     auto nextState = oboe::StreamState::Unknown;
+//     while (result == oboe::Result::OK && currentState != oboe::StreamState::Started) {
+//         result = outStream->waitForStateChange(currentState, &nextState, timeoutNanos);
+//         currentState = nextState;
+//     }
+//     if (result != oboe::Result::OK) return result;
+//     return inStream->requestStart();
+// }
 
-    oboe::Result result = startStreams();
-    if (result != oboe::Result::OK) {
-        stopStreams();
-    } else {
-        mIsPlaying = true;
-    }
-    return result == oboe::Result::OK;
-}
-
-bool DuplexEngine::finishStreams() {
-    oboe::Result result = stopStreams();
-    mIsPlaying = false;
-    return result == oboe::Result::OK;
-}
-
-template<class numeric>
-void DuplexEngine::createCallback() {
-    mCallback = std::make_unique<DuplexCallback<numeric>>(
-            *inStream, 
-            [&functionStack = this->functionList](numeric *beg, numeric *end) {
-                std::get<FunctionList<numeric *>>(functionStack)(beg, end);
-            },
-            inStream->getBufferCapacityInFrames(),
-            std::bind(&DuplexEngine::beginStreams, this));
-}
-
-oboe::AudioStreamBuilder DuplexEngine::defaultBuilder() {
-    return *oboe::AudioStreamBuilder()
-            .setPerformanceMode(oboe::PerformanceMode::LowLatency)
-            ->setSharingMode(oboe::SharingMode::Exclusive)
-            ->setAudioApi(mAudioApi)
-            ->setSampleRate(mSampleRate)
-            ->setFormat(mFormat);
-}
-
-oboe::Result DuplexEngine::openInStream() {
-    return defaultBuilder().setDirection(oboe::Direction::Input)
-            ->setDeviceId(mInputDeviceId)
-            ->setChannelCount(mInputChannelCount)
-            ->openManagedStream(inStream);
-}
-
-oboe::Result DuplexEngine::openOutStream() {
-    return defaultBuilder().setDirection(oboe::Direction::Output)
-            ->setCallback(mCallback.get())
-            ->setDeviceId(mOutputDeviceId)
-            ->setChannelCount(mOutputChannelCount)
-            ->openManagedStream(outStream);
-}
-
-oboe::Result DuplexEngine::startStreams() {
-    oboe::Result result = outStream->requestStart();
-    int64_t timeoutNanos = 500 * 1000000; // arbitrary 1/2 second
-    auto currentState = outStream->getState();
-    auto nextState = oboe::StreamState::Unknown;
-    while (result == oboe::Result::OK && currentState != oboe::StreamState::Started) {
-        result = outStream->waitForStateChange(currentState, &nextState, timeoutNanos);
-        currentState = nextState;
-    }
-    if (result != oboe::Result::OK) return result;
-    return inStream->requestStart();
-}
-
-oboe::Result DuplexEngine::stopStreams() {
-    oboe::Result outputResult = inStream->requestStop();
-    oboe::Result inputResult = outStream->requestStop();
-    if (outputResult != oboe::Result::OK) return outputResult;
-    return inputResult;
-}
+// oboe::Result DuplexEngine::stopStreams() {
+//     oboe::Result outputResult = inStream->requestStop();
+//     oboe::Result inputResult = outStream->requestStop();
+//     if (outputResult != oboe::Result::OK) return outputResult;
+//     return inputResult;
+// }
