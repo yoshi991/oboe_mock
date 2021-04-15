@@ -29,8 +29,8 @@ bool DuplexEngine::isAAudioRecommended() {
     return mDuplexCallback.isAAudioRecommended();
 }
 
-bool DuplexEngine::setAudioApi(oboe::AudioApi api) {
-    return mDuplexCallback.setAudioApi(api);
+bool DuplexEngine::setAudioApi(OboeApiType apiType) {
+    return mDuplexCallback.setAudioApi(apiType);
 }
 
 bool DuplexEngine::requestStart() {

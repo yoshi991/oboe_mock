@@ -16,9 +16,23 @@ bool DuplexCallback::isAAudioRecommended() {
     return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
 
-bool DuplexCallback::setAudioApi(oboe::AudioApi api) {
+bool DuplexCallback::setAudioApi(OboeApiType apiType) {
     if (mIsPlaying) return false;
-    mAudioApi = api;
+
+    oboe::AudioApi audioApi;
+    switch (apiType) {
+        case OboeApiType::AAudio:
+            audioApi = oboe::AudioApi::AAudio;
+            break;
+        case OboeApiType::OpenSLES:
+            audioApi = oboe::AudioApi::OpenSLES;
+            break;
+        default:
+            audioApi = oboe::AudioApi::Unspecified;
+            break;
+    }
+
+    mAudioApi = audioApi;
     return true;
 }
 

@@ -15,13 +15,10 @@
  */
 
 #include <jni.h>
-#include <oboe/Oboe.h>
 
 #include "logging_macros.h"
+#include "OboeApiType.h"
 #include "DuplexEngine.h"
-
-static const int kOboeApiAAudio = 0;
-static const int kOboeApiOpenSLES = 1;
 
 static DuplexEngine *engine = nullptr;
 
@@ -89,6 +86,13 @@ Java_com_yoshi991_oboe_LiveEffectEngine_setPlaybackDeviceId(
     engine->setPlaybackDeviceId(deviceId);
 }
 
+/**
+ * Set Audio API for Oboe.
+ *
+ * See: https://google.github.io/oboe/reference/classoboe_1_1_audio_stream_builder.html#a38c6d6c5e718df1e3ac69daaac47c391
+ *
+ * @param apiType 0: AAudio, 1: OpenSLES, else: Unspecified.
+ */
 JNIEXPORT jboolean JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_setAPI(
     JNIEnv *env, jclass type, jint apiType) {
@@ -97,20 +101,20 @@ Java_com_yoshi991_oboe_LiveEffectEngine_setAPI(
         return JNI_FALSE;
     }
 
-    oboe::AudioApi audioApi;
-    switch (apiType) {
-        case kOboeApiAAudio:
-            audioApi = oboe::AudioApi::AAudio;
-            break;
-        case kOboeApiOpenSLES:
-            audioApi = oboe::AudioApi::OpenSLES;
-            break;
-        default:
-            LOGE("Unknown API selection to setAPI() %d", apiType);
-            return JNI_FALSE;
-    }
+     OboeApiType oboeType;
+     switch (apiType) {
+         case static_cast<int>(OboeApiType::AAudio):
+             oboeType = OboeApiType::AAudio;
+             break;
+         case static_cast<int>(OboeApiType::OpenSLES):
+             oboeType = OboeApiType::OpenSLES;
+             break;
+         default:
+             oboeType = OboeApiType::Unspecified;
+             break;
+     }
 
-    return engine->setAudioApi(audioApi) ? JNI_TRUE : JNI_FALSE;
+    return engine->setAudioApi(oboeType) ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT jboolean JNICALL

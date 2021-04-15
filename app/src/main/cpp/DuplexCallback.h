@@ -19,6 +19,7 @@
 #include <oboe/Oboe.h>
 
 #include "logging_macros.h"
+#include "OboeApiType.h"
 
 class DuplexCallback : public oboe::AudioStreamCallback {
 public:
@@ -27,7 +28,7 @@ public:
 
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
-    bool setAudioApi(oboe::AudioApi);
+    bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended();
 
     bool openStreams();

@@ -20,9 +20,8 @@
 #include <array>
 #include <algorithm>
 #include <variant>
-#include <oboe/Oboe.h>
 
-#include "FunctionList.h"
+#include "OboeApiType.h"
 #include "DuplexCallback.h"
 
 class DuplexEngine {
@@ -32,7 +31,7 @@ public:
 
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
-    bool setAudioApi(oboe::AudioApi api);
+    bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
 
     bool requestStart();
