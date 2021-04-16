@@ -17,6 +17,10 @@
 #include "AudioEngine.h"
 #include "logging_macros.h"
 
+void AudioEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
+    mDuplexCallback.setDefaultStreamValues(sampleRate, framesPerBurst);
+}
+
 void AudioEngine::setRecordingDeviceId(int32_t deviceId) {
     mDuplexCallback.setRecordingDeviceId(deviceId);
 }

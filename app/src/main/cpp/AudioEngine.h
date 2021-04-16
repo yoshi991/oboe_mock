@@ -29,6 +29,7 @@ public:
     AudioEngine() {};
     virtual ~AudioEngine() = default;
 
+    void setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst);
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
     bool setAudioApi(OboeApiType apiType);

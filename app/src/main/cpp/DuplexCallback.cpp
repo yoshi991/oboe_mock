@@ -4,6 +4,11 @@ DuplexCallback::~DuplexCallback() {
     closeStreams();
 }
 
+void DuplexCallback::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
+    oboe::DefaultStreamValues::SampleRate = sampleRate;
+    oboe::DefaultStreamValues::FramesPerBurst = framesPerBurst;
+}
+
 void DuplexCallback::setRecordingDeviceId(int32_t deviceId) {
     mInputDeviceId = deviceId;
 }
