@@ -50,12 +50,20 @@ void DuplexCallback::setMute(bool isMute) {
 }
 
 bool DuplexCallback::openStreams() {
-    // TODO:
-    oboe::Result result = openInputStream();
+    // Note: The order of stream creation is important. We create the playback
+    // stream first, then use properties from the playback stream
+    // (e.g. sample rate) to create the recording stream. By matching the
+    // properties we should get the lowest latency path
+    oboe::Result result = openOutputStream();
     if (result != oboe::Result::OK) {
         return false;
     }
-    return openOutputStream() == oboe::Result::OK;
+
+    result = openInputStream();
+    if (result != oboe::Result::OK) {
+        closeOutputStream();
+    }
+    return result == oboe::Result::OK;
 }
 
 bool DuplexCallback::closeStreams() {
@@ -133,18 +141,36 @@ oboe::AudioStreamBuilder DuplexCallback::createOutputBuilder() {
 
 oboe::Result DuplexCallback::openInputStream() {
     oboe::Result result = createInputBuilder().openStream(mInputStream);
-    if (result != oboe::Result::OK) {
-        LOGE("%s: input stream open failure", kTag);
+    if (result == oboe::Result::OK) {
+        warnIfNotLowLatency(mInputStream);
+    } else {
+        LOGE("%s: input stream open failure: %s", kTag, oboe::convertToText(result));
     }
     return result;
 }
 
 oboe::Result DuplexCallback::openOutputStream() {
     oboe::Result result = createOutputBuilder().openStream(mOutputStream);
-    if (result != oboe::Result::OK) {
-        LOGE("%s: output stream open failure", kTag);
+    if (result == oboe::Result::OK) {
+        // The input stream needs to run at the same sample rate as the output.
+        mSampleRate = mOutputStream->getSampleRate();
+        warnIfNotLowLatency(mOutputStream);
+    } else {
+        LOGE("%s: output stream open failure: %s", kTag, oboe::convertToText(result));
+        mSampleRate = oboe::kUnspecified;
     }
     return result;
+}
+
+/**
+ * Warn in logcat if non-low latency stream is created
+ * 
+ * @param stream: newly created stream
+ */
+void DuplexCallback::warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream> &stream) {
+    if (stream->getPerformanceMode() != oboe::PerformanceMode::LowLatency) {
+        LOGW("Stream is NOT low latency. Check your requested format, sample rate and channel count");
+    }
 }
 
 void DuplexCallback::closeStream(std::shared_ptr<oboe::AudioStream> &stream) {

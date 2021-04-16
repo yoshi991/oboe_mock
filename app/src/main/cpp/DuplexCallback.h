@@ -83,6 +83,7 @@ private:
 
     oboe::Result openInputStream();
     oboe::Result openOutputStream();
+    void warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream> &stream);
 
     void closeStream(std::shared_ptr<oboe::AudioStream> &stream);
     void closeInputStream();
