@@ -1,27 +1,27 @@
-#include "DuplexCallback.h"
+#include "DuplexEngine.h"
 
-DuplexCallback::~DuplexCallback() {
+DuplexEngine::~DuplexEngine() {
     closeStreams();
 }
 
-void DuplexCallback::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
+void DuplexEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
     oboe::DefaultStreamValues::SampleRate = sampleRate;
     oboe::DefaultStreamValues::FramesPerBurst = framesPerBurst;
 }
 
-void DuplexCallback::setRecordingDeviceId(int32_t deviceId) {
+void DuplexEngine::setRecordingDeviceId(int32_t deviceId) {
     mInputDeviceId = deviceId;
 }
 
-void DuplexCallback::setPlaybackDeviceId(int32_t deviceId) {
+void DuplexEngine::setPlaybackDeviceId(int32_t deviceId) {
     mOutputDeviceId = deviceId;
 }
 
-bool DuplexCallback::isAAudioRecommended() {
+bool DuplexEngine::isAAudioRecommended() {
     return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
 
-bool DuplexCallback::setAudioApi(OboeApiType apiType) {
+bool DuplexEngine::setAudioApi(OboeApiType apiType) {
     if (mIsPlaying) return false;
 
     oboe::AudioApi audioApi;
@@ -41,15 +41,15 @@ bool DuplexCallback::setAudioApi(OboeApiType apiType) {
     return true;
 }
 
-void DuplexCallback::setPlaybackMicrophone(bool enabled) {
+void DuplexEngine::setPlaybackMicrophone(bool enabled) {
     mIsPlaybackMicrophone = enabled;
 }
 
-void DuplexCallback::setMute(bool isMute) {
+void DuplexEngine::setMute(bool isMute) {
     mIsMute = isMute;
 }
 
-bool DuplexCallback::openStreams() {
+bool DuplexEngine::openStreams() {
     // Note: The order of stream creation is important. We create the playback
     // stream first, then use properties from the playback stream
     // (e.g. sample rate) to create the recording stream. By matching the
@@ -66,13 +66,13 @@ bool DuplexCallback::openStreams() {
     return result == oboe::Result::OK;
 }
 
-bool DuplexCallback::closeStreams() {
+bool DuplexEngine::closeStreams() {
     closeOutputStream();
     closeInputStream();
     return true;
 }
 
-bool DuplexCallback::start() {
+bool DuplexEngine::start() {
     if (mIsPlaying) {
         LOGE("%s: streams has already started", kTag);
         return false;
@@ -96,7 +96,7 @@ bool DuplexCallback::start() {
     return true;
 }
 
-bool DuplexCallback::stop() {
+bool DuplexEngine::stop() {
     if (!mIsPlaying) return false;
 
     oboe::Result outputResult = oboe::Result::OK;
@@ -116,7 +116,7 @@ bool DuplexCallback::stop() {
     return inputResult == oboe::Result::OK;
 }
 
-oboe::AudioStreamBuilder DuplexCallback::createDefaultBuilder() {
+oboe::AudioStreamBuilder DuplexEngine::createDefaultBuilder() {
     return *oboe::AudioStreamBuilder()
             .setPerformanceMode(oboe::PerformanceMode::LowLatency)
             ->setSharingMode(oboe::SharingMode::Exclusive)
@@ -124,14 +124,14 @@ oboe::AudioStreamBuilder DuplexCallback::createDefaultBuilder() {
             ->setFormat(mFormat);
 }
 
-oboe::AudioStreamBuilder DuplexCallback::createInputBuilder() {
+oboe::AudioStreamBuilder DuplexEngine::createInputBuilder() {
     return *createDefaultBuilder().setDirection(oboe::Direction::Input)
             ->setDeviceId(mInputDeviceId)
             ->setSampleRate(mSampleRate)
             ->setChannelCount(mInputChannelCount);
 }
 
-oboe::AudioStreamBuilder DuplexCallback::createOutputBuilder() {
+oboe::AudioStreamBuilder DuplexEngine::createOutputBuilder() {
     return *createDefaultBuilder().setDirection(oboe::Direction::Output)
             ->setDataCallback(this)
             ->setErrorCallback(this)
@@ -139,7 +139,7 @@ oboe::AudioStreamBuilder DuplexCallback::createOutputBuilder() {
             ->setChannelCount(mOutputChannelCount);
 }
 
-oboe::Result DuplexCallback::openInputStream() {
+oboe::Result DuplexEngine::openInputStream() {
     oboe::Result result = createInputBuilder().openStream(mInputStream);
     if (result == oboe::Result::OK) {
         warnIfNotLowLatency(mInputStream);
@@ -149,7 +149,7 @@ oboe::Result DuplexCallback::openInputStream() {
     return result;
 }
 
-oboe::Result DuplexCallback::openOutputStream() {
+oboe::Result DuplexEngine::openOutputStream() {
     oboe::Result result = createOutputBuilder().openStream(mOutputStream);
     if (result == oboe::Result::OK) {
         // The input stream needs to run at the same sample rate as the output.
@@ -167,13 +167,13 @@ oboe::Result DuplexCallback::openOutputStream() {
  * 
  * @param stream: newly created stream
  */
-void DuplexCallback::warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream> &stream) {
+void DuplexEngine::warnIfNotLowLatency(std::shared_ptr<oboe::AudioStream> &stream) {
     if (stream->getPerformanceMode() != oboe::PerformanceMode::LowLatency) {
         LOGW("Stream is NOT low latency. Check your requested format, sample rate and channel count");
     }
 }
 
-void DuplexCallback::closeStream(std::shared_ptr<oboe::AudioStream> &stream) {
+void DuplexEngine::closeStream(std::shared_ptr<oboe::AudioStream> &stream) {
     if (!stream) return;
 
     oboe::Result result = stream->stop();
@@ -187,15 +187,15 @@ void DuplexCallback::closeStream(std::shared_ptr<oboe::AudioStream> &stream) {
     stream.reset();
 }
 
-void DuplexCallback::closeInputStream() {
+void DuplexEngine::closeInputStream() {
     closeStream(mInputStream);
 }
 
-void DuplexCallback::closeOutputStream() {
+void DuplexEngine::closeOutputStream() {
     closeStream(mOutputStream);
 }
 
-void DuplexCallback::setInputBufferSize() {
+void DuplexEngine::setInputBufferSize() {
     // Determine maximum size that could possibly be called.
     int32_t bufferSize = mOutputStream->getBufferCapacityInFrames() * mOutputStream->getChannelCount();
     if (bufferSize > mBufferSize) {
@@ -204,7 +204,7 @@ void DuplexCallback::setInputBufferSize() {
     }
 }
 
-oboe::DataCallbackResult DuplexCallback::onBothStreamsReady(
+oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     std::shared_ptr<oboe::AudioStream> inputStream,
     const void *inputData,
     int   numInputFrames,
@@ -252,13 +252,11 @@ oboe::DataCallbackResult DuplexCallback::onBothStreamsReady(
  * @param numFrames:  number of frames to load to audioData buffer
  * @return: DataCallbackResult::Continue.
  */
-oboe::DataCallbackResult DuplexCallback::onAudioReady(
+oboe::DataCallbackResult DuplexEngine::onAudioReady(
     oboe::AudioStream *outputStream, 
     void *audioData, 
     int32_t numFrames
 ) {
-    LOGD("[AudioPlayer]: DuplexCallback, onAudioReady");
-        
     oboe::DataCallbackResult callbackResult = oboe::DataCallbackResult::Continue;
     int32_t actualFramesRead = 0;   
     // Silence the output.
@@ -316,7 +314,7 @@ oboe::DataCallbackResult DuplexCallback::onAudioReady(
  * @param oboeStream: the stream to close
  * @param result: oboe's reason for closing the stream
  */
-void DuplexCallback::onErrorBeforeClose(
+void DuplexEngine::onErrorBeforeClose(
     oboe::AudioStream *oboeStream, 
     oboe::Result result
 ) {
@@ -332,7 +330,7 @@ void DuplexCallback::onErrorBeforeClose(
  * @param oboeStream
  * @param result
  */
-void DuplexCallback::onErrorAfterClose(
+void DuplexEngine::onErrorAfterClose(
     oboe::AudioStream *oboeStream, 
     oboe::Result result
 ) {

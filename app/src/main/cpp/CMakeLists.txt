@@ -17,7 +17,7 @@ add_library(liveEffect
         ${SAMPLE_ROOT_DIR}/debug-utils/trace.cpp
         jni_bridge.cpp
         AudioEngine.cpp
-        DuplexCallback.cpp
+        DuplexEngine.cpp
     )
 
 target_include_directories(liveEffect

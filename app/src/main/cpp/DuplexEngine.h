@@ -1,15 +1,15 @@
-#ifndef ANDROID_FXLAB_DUPLEXCALLBACK_H
-#define ANDROID_FXLAB_DUPLEXCALLBACK_H
+#ifndef __DUPLEX_ENGINE_H__
+#define __DUPLEX_ENGINE_H__
 
 #include <oboe/Oboe.h>
 
 #include "logging_macros.h"
 #include "OboeApiType.h"
 
-class DuplexCallback : public oboe::AudioStreamCallback {
+class DuplexEngine : public oboe::AudioStreamCallback {
 public:
-    DuplexCallback() {};
-    ~DuplexCallback();
+    DuplexEngine() {};
+    ~DuplexEngine();
 
     void setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst);
     void setRecordingDeviceId(int32_t deviceId);
@@ -42,7 +42,7 @@ public:
     void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result result) override;
 
 private:
-    const char *kTag = "[DuplexCallback]";
+    const char *kTag = "[DuplexEngine]";
 
     bool mIsPlaying = false;
     bool mIsPlaybackMicrophone = false;
@@ -102,4 +102,4 @@ private:
 
 };
 
-#endif //ANDROID_FXLAB_DUPLEXCALLBACK_H
+#endif //__DUPLEX_ENGINE_H__

@@ -6,7 +6,7 @@
 #include <variant>
 
 #include "OboeApiType.h"
-#include "DuplexCallback.h"
+#include "DuplexEngine.h"
 
 class AudioEngine {
 public:
@@ -23,7 +23,7 @@ public:
     bool requestStop();
 
 private:
-    DuplexCallback mDuplexCallback;
+    DuplexEngine mDuplexEngine;
 };
 
 #endif //__AUDIO_ENGINE_H__

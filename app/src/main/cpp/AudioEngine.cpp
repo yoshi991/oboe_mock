@@ -2,35 +2,35 @@
 #include "logging_macros.h"
 
 void AudioEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
-    mDuplexCallback.setDefaultStreamValues(sampleRate, framesPerBurst);
+    mDuplexEngine.setDefaultStreamValues(sampleRate, framesPerBurst);
 }
 
 void AudioEngine::setRecordingDeviceId(int32_t deviceId) {
-    mDuplexCallback.setRecordingDeviceId(deviceId);
+    mDuplexEngine.setRecordingDeviceId(deviceId);
 }
 
 void AudioEngine::setPlaybackDeviceId(int32_t deviceId) {
-    mDuplexCallback.setPlaybackDeviceId(deviceId);
+    mDuplexEngine.setPlaybackDeviceId(deviceId);
 }
 
 bool AudioEngine::isAAudioRecommended() {
-    return mDuplexCallback.isAAudioRecommended();
+    return mDuplexEngine.isAAudioRecommended();
 }
 
 bool AudioEngine::setAudioApi(OboeApiType apiType) {
-    return mDuplexCallback.setAudioApi(apiType);
+    return mDuplexEngine.setAudioApi(apiType);
 }
 
 bool AudioEngine::requestStart() {
-    bool success = mDuplexCallback.openStreams();
+    bool success = mDuplexEngine.openStreams();
     if (success) {
-        mDuplexCallback.start();
+        mDuplexEngine.start();
     }
     return success;
 }
 
 bool AudioEngine::requestStop() {
-    mDuplexCallback.stop();
-    mDuplexCallback.closeStreams();
+    mDuplexEngine.stop();
+    mDuplexEngine.closeStreams();
     return true;
 }
