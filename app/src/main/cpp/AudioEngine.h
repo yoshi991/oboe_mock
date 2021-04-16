@@ -5,12 +5,14 @@
 #include <algorithm>
 #include <variant>
 
+#include "logging_macros.h"
 #include "OboeApiType.h"
+#include "DuplexCallback.h"
 #include "DuplexEngine.h"
 
-class AudioEngine {
+class AudioEngine : DuplexCallback {
 public:
-    AudioEngine() {};
+    AudioEngine();
     virtual ~AudioEngine() = default;
 
     void setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst);
@@ -22,7 +24,12 @@ public:
     bool requestStart();
     bool requestStop();
 
+    void onInputReady(const void *inputData, int32_t numFrames) override;
+    void onOutputReady(void *outputData, int32_t numFrames) override;
+
 private:
+    const char *kTag = "[AudioEngine]";
+
     DuplexEngine mDuplexEngine;
 };
 

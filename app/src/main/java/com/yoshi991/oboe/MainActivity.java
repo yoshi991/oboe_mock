@@ -159,7 +159,7 @@ public class MainActivity extends Activity
             return;
         }
 
-        String path = NativeAudioEngineBridge.INSTANCE.copyAssetToInternalStorage(this, "mori.wav");
+//        String path = NativeAudioEngineBridge.INSTANCE.copyAssetToInternalStorage(this, "mori.wav");
         boolean success = LiveEffectEngine.requestStart();
         if (success) {
             setSpinnersEnabled(false);

@@ -4,12 +4,15 @@
 #include <oboe/Oboe.h>
 
 #include "logging_macros.h"
+#include "DuplexCallback.h"
 #include "OboeApiType.h"
 
 class DuplexEngine : public oboe::AudioStreamCallback {
 public:
     DuplexEngine() {};
     ~DuplexEngine();
+
+    void setCallback(DuplexCallback *callback);
 
     void setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst);
     void setRecordingDeviceId(int32_t deviceId);
@@ -43,6 +46,8 @@ public:
 
 private:
     const char *kTag = "[DuplexEngine]";
+
+    DuplexCallback *mCallback = nullptr;
 
     bool mIsPlaying = false;
     bool mIsPlaybackMicrophone = false;
