@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef EFFECTS_APP_DUPLEXSTREAM_H
-#define EFFECTS_APP_DUPLEXSTREAM_H
+#ifndef __AUDIO_ENGINE_H__
+#define __AUDIO_ENGINE_H__
 
 #include <array>
 #include <algorithm>
@@ -24,10 +24,10 @@
 #include "OboeApiType.h"
 #include "DuplexCallback.h"
 
-class DuplexEngine {
+class AudioEngine {
 public:
-    DuplexEngine() {};
-    virtual ~DuplexEngine() = default;
+    AudioEngine() {};
+    virtual ~AudioEngine() = default;
 
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
@@ -45,4 +45,4 @@ private:
 
 };
 
-#endif //EFFECTS_APP_DUPLEXSTREAM_H
+#endif //__AUDIO_ENGINE_H__

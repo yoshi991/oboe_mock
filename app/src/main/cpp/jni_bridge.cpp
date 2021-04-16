@@ -18,9 +18,9 @@
 
 #include "logging_macros.h"
 #include "OboeApiType.h"
-#include "DuplexEngine.h"
+#include "AudioEngine.h"
 
-static DuplexEngine *engine = nullptr;
+static AudioEngine *engine = nullptr;
 
 extern "C" {
 
@@ -29,7 +29,7 @@ Java_com_yoshi991_oboe_LiveEffectEngine_create(
     JNIEnv *env, jclass) {
     if (engine != nullptr) return JNI_TRUE;
 
-    engine = new DuplexEngine();
+    engine = new AudioEngine();
     return (engine != nullptr) ? JNI_TRUE : JNI_FALSE;
 }
 

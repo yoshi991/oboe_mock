@@ -31,7 +31,7 @@ add_library(liveEffect
     SHARED
         ${SAMPLE_ROOT_DIR}/debug-utils/trace.cpp
         jni_bridge.cpp
-        DuplexEngine.cpp
+        AudioEngine.cpp
         DuplexCallback.cpp
     )
 

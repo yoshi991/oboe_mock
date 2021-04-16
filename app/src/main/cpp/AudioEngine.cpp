@@ -14,26 +14,26 @@
  * limitations under the License.
  */
 
-#include "DuplexEngine.h"
+#include "AudioEngine.h"
 #include "logging_macros.h"
 
-void DuplexEngine::setRecordingDeviceId(int32_t deviceId) {
+void AudioEngine::setRecordingDeviceId(int32_t deviceId) {
     mDuplexCallback.setRecordingDeviceId(deviceId);
 }
 
-void DuplexEngine::setPlaybackDeviceId(int32_t deviceId) {
+void AudioEngine::setPlaybackDeviceId(int32_t deviceId) {
     mDuplexCallback.setPlaybackDeviceId(deviceId);
 }
 
-bool DuplexEngine::isAAudioRecommended() {
+bool AudioEngine::isAAudioRecommended() {
     return mDuplexCallback.isAAudioRecommended();
 }
 
-bool DuplexEngine::setAudioApi(OboeApiType apiType) {
+bool AudioEngine::setAudioApi(OboeApiType apiType) {
     return mDuplexCallback.setAudioApi(apiType);
 }
 
-bool DuplexEngine::requestStart() {
+bool AudioEngine::requestStart() {
     bool success = mDuplexCallback.openStreams();
     if (success) {
         mDuplexCallback.start();
@@ -41,13 +41,13 @@ bool DuplexEngine::requestStart() {
     return success;
 }
 
-bool DuplexEngine::requestStop() {
+bool AudioEngine::requestStop() {
     mDuplexCallback.stop();
     mDuplexCallback.closeStreams();
     return true;
 }
 
-// oboe::Result DuplexEngine::startStreams() {
+// oboe::Result AudioEngine::startStreams() {
 //     oboe::Result result = outStream->requestStart();
 //     int64_t timeoutNanos = 500 * 1000000; // arbitrary 1/2 second
 //     auto currentState = outStream->getState();
@@ -60,7 +60,7 @@ bool DuplexEngine::requestStop() {
 //     return inStream->requestStart();
 // }
 
-// oboe::Result DuplexEngine::stopStreams() {
+// oboe::Result AudioEngine::stopStreams() {
 //     oboe::Result outputResult = inStream->requestStop();
 //     oboe::Result inputResult = outStream->requestStop();
 //     if (outputResult != oboe::Result::OK) return outputResult;
