@@ -65,7 +65,10 @@ bool DuplexCallback::closeStreams() {
 }
 
 bool DuplexCallback::start() {
-    if (mIsPlaying) return false;
+    if (mIsPlaying) {
+        LOGE("%s: streams has already started", kTag);
+        return false;
+    }
 
     mCountCallbacksToDrain = kNumCallbacksToDrain;
     mCountInputBurstsCushion = mNumInputBurstsCushion;
