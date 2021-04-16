@@ -46,23 +46,3 @@ bool AudioEngine::requestStop() {
     mDuplexCallback.closeStreams();
     return true;
 }
-
-// oboe::Result AudioEngine::startStreams() {
-//     oboe::Result result = outStream->requestStart();
-//     int64_t timeoutNanos = 500 * 1000000; // arbitrary 1/2 second
-//     auto currentState = outStream->getState();
-//     auto nextState = oboe::StreamState::Unknown;
-//     while (result == oboe::Result::OK && currentState != oboe::StreamState::Started) {
-//         result = outStream->waitForStateChange(currentState, &nextState, timeoutNanos);
-//         currentState = nextState;
-//     }
-//     if (result != oboe::Result::OK) return result;
-//     return inStream->requestStart();
-// }
-
-// oboe::Result AudioEngine::stopStreams() {
-//     oboe::Result outputResult = inStream->requestStop();
-//     oboe::Result inputResult = outStream->requestStop();
-//     if (outputResult != oboe::Result::OK) return outputResult;
-//     return inputResult;
-// }

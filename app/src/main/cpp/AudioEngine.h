@@ -39,10 +39,6 @@ public:
 
 private:
     DuplexCallback mDuplexCallback;
-
-    // oboe::Result startStreams();
-    // oboe::Result stopStreams();
-
 };
 
 #endif //__AUDIO_ENGINE_H__
