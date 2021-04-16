@@ -285,7 +285,7 @@ oboe::DataCallbackResult DuplexCallback::onAudioReady(
  * Oboe notifies the application for "about to close the stream".
  *
  * @param oboeStream: the stream to close
- * @param error: oboe's reason for closing the stream
+ * @param result: oboe's reason for closing the stream
  */
 void DuplexCallback::onErrorBeforeClose(
     oboe::AudioStream *oboeStream, 
@@ -301,7 +301,7 @@ void DuplexCallback::onErrorBeforeClose(
  * Oboe notifies application that "the stream is closed"
  *
  * @param oboeStream
- * @param error
+ * @param result
  */
 void DuplexCallback::onErrorAfterClose(
     oboe::AudioStream *oboeStream, 
