@@ -31,6 +31,9 @@ public:
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended();
 
+    void setPlaybackMicrophone(bool enabled);
+    void setMute(bool isMute);
+
     bool openStreams();
     bool closeStreams();
 
@@ -56,6 +59,9 @@ private:
     const char *kTag = "[DuplexCallback]";
 
     bool mIsPlaying = false;
+    bool mIsPlaybackMicrophone = false;
+    bool mIsMute = false;
+
     int32_t mInputDeviceId = oboe::kUnspecified;
     int32_t mOutputDeviceId = oboe::kUnspecified;
     const oboe::AudioFormat mFormat = oboe::AudioFormat::Float; // for easier processing

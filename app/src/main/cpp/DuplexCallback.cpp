@@ -36,6 +36,14 @@ bool DuplexCallback::setAudioApi(OboeApiType apiType) {
     return true;
 }
 
+void DuplexCallback::setPlaybackMicrophone(bool enabled) {
+    mIsPlaybackMicrophone = enabled;
+}
+
+void DuplexCallback::setMute(bool isMute) {
+    mIsMute = isMute;
+}
+
 bool DuplexCallback::openStreams() {
     // TODO:
     oboe::Result result = openInputStream();
@@ -172,6 +180,10 @@ oboe::DataCallbackResult DuplexCallback::onBothStreamsReady(
 ) {
     // TODO:
     // Copy the input samples to the output with a little arbitrary gain change.
+
+    if (mIsMute) {
+        return oboe::DataCallbackResult::Continue;
+    }
 
     // This code assumes the data format for both streams is Float.
     const float *inputFloats = static_cast<const float *>(inputData);
