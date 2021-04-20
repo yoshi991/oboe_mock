@@ -39,10 +39,15 @@ bool AudioEngine::requestStop() {
     return true;
 }
 
-void AudioEngine::onInputReady(const void *inputData, int32_t numFrames) {
+void AudioEngine::onInputReady(void *inputData, int32_t numFrames) {
     // TODO:
+    float *inputFloats = static_cast<float *>(inputData);
+    for (int32_t i = 0; i < numFrames; i++) {
+       *inputFloats++ *= 0.95;
+    }   
 }
 
 void AudioEngine::onOutputReady(void *outputData, int32_t numFrames) {
     // TODO:
+    float *outputFloats = static_cast<float *>(outputData);
 }

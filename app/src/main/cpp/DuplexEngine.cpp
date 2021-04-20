@@ -213,7 +213,7 @@ void DuplexEngine::setInputBufferSize() {
 
 oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     std::shared_ptr<oboe::AudioStream> inputStream,
-    const void *inputData,
+    void *inputData,
     int numInputFrames,
     std::shared_ptr<oboe::AudioStream> outputStream,
     void *outputData,
@@ -236,11 +236,13 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     }
 
     // This code assumes the data format for both streams is Float.
-    const float *inputFloats = static_cast<const float *>(inputData);
+    float *inputFloats = static_cast<float *>(inputData);
     float *outputFloats = static_cast<float *>(outputData);
 
-    for (int32_t i = 0; i < samplesToProcess; i++) {
-        *outputFloats++ = *inputFloats++ * 0.95; // do some arbitrary processing
+    if (mIsPlaybackMicrophone) {
+        for (int32_t i = 0; i < samplesToProcess; i++) {
+            *outputFloats++ = *inputFloats++;
+        }
     }
 
     return oboe::DataCallbackResult::Continue;

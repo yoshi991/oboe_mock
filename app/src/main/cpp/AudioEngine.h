@@ -24,7 +24,7 @@ public:
     bool requestStart();
     bool requestStop();
 
-    void onInputReady(const void *inputData, int32_t numFrames) override;
+    void onInputReady(void *inputData, int32_t numFrames) override;
     void onOutputReady(void *outputData, int32_t numFrames) override;
 
 private:

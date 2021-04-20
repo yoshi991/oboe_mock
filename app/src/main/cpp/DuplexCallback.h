@@ -5,7 +5,7 @@ class DuplexCallback {
 public:
     virtual ~DuplexCallback() = default;
 
-    virtual void onInputReady(const void *inputData, int32_t numFrames) {}
+    virtual void onInputReady(void *inputData, int32_t numFrames) {}
 
     virtual void onOutputReady(void *outputData, int32_t numFrames) {}
 };
