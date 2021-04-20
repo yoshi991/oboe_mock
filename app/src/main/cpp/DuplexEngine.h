@@ -100,10 +100,10 @@ private:
     oboe::DataCallbackResult onBothStreamsReady(
         std::shared_ptr<oboe::AudioStream> inputStream,
         void *inputData,
-        int   numInputFrames,
+        int numInputFrames,
         std::shared_ptr<oboe::AudioStream> outputStream,
         void *outputData,
-        int   numOutputFrames
+        int numOutputFrames
     );
 
 };

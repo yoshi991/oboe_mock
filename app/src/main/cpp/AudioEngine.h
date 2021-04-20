@@ -24,8 +24,8 @@ public:
     bool requestStart();
     bool requestStop();
 
-    void onInputReady(void *inputData, int32_t numFrames) override;
-    void onOutputReady(void *outputData, int32_t numFrames) override;
+    void onInputReady(float *inputFloats, int32_t numFrames) override;
+    void onOutputReady(float *outputFloats, int32_t numFrames) override;
 
 private:
     const char *kTag = "[AudioEngine]";

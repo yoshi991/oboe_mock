@@ -223,6 +223,10 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
         return oboe::DataCallbackResult::Continue;
     }
 
+    // This code assumes the data format for both streams is Float.
+    float *inputFloats = static_cast<float *>(inputData);
+    float *outputFloats = static_cast<float *>(outputData);
+
     // It also assumes the channel count for each stream is the same.
     int32_t samplesPerFrame = outputStream->getChannelCount();
     int32_t numInputSamples = numInputFrames * samplesPerFrame;
@@ -231,13 +235,9 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     // It is possible that there may be fewer input than output samples.
     int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
     if (mCallback) {
-        mCallback->onInputReady(inputData, samplesToProcess);
-        mCallback->onOutputReady(outputData, samplesToProcess);
+        mCallback->onInputReady(inputFloats, samplesToProcess);
+        mCallback->onOutputReady(outputFloats, samplesToProcess);
     }
-
-    // This code assumes the data format for both streams is Float.
-    float *inputFloats = static_cast<float *>(inputData);
-    float *outputFloats = static_cast<float *>(outputData);
 
     if (mIsPlaybackMicrophone) {
         for (int32_t i = 0; i < samplesToProcess; i++) {
