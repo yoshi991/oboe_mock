@@ -5,7 +5,8 @@ AudioEngine::AudioEngine() {
 }
 
 void AudioEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
-    mDuplexEngine.setDefaultStreamValues(sampleRate, framesPerBurst);
+    mDuplexEngine.setSampleRate(sampleRate);
+    mDuplexEngine.setFramesPerBurst(framesPerBurst);
 }
 
 void AudioEngine::setRecordingDeviceId(int32_t deviceId) {

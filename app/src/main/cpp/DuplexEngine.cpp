@@ -8,8 +8,11 @@ void DuplexEngine::setCallback(DuplexCallback *callback) {
     mCallback = callback;
 }
 
-void DuplexEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
+void DuplexEngine::setSampleRate(int32_t sampleRate) {
     oboe::DefaultStreamValues::SampleRate = sampleRate;
+}
+
+void DuplexEngine::setFramesPerBurst(int32_t framesPerBurst) {
     oboe::DefaultStreamValues::FramesPerBurst = framesPerBurst;
 }
 
