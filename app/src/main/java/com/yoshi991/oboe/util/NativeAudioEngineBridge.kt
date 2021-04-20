@@ -1,26 +1,29 @@
 package com.yoshi991.oboe.util
 
 import android.content.Context
+import android.util.Log
 import java.io.*
 
 object NativeAudioEngineBridge {
     /**
      * Returns the list of internal storage paths.
      */
+    @JvmStatic
     fun copyAssetToInternalStorage(
         context: Context,
-        assetsFilePath: String): String {
+        assetsFilePath: String
+    ): String? {
         val assetManager = context.applicationContext.assets
         val internalStorageFilesDirAbsolutePath = context.filesDir.absolutePath
-        var result: String
 
         var inputStream: InputStream? = null
         var outputStream: OutputStream? = null
-        try {
+
+        return try {
             val outFile = File(internalStorageFilesDirAbsolutePath, assetsFilePath)
-            result = outFile.absolutePath
+            val result = outFile.absolutePath
             if (!outFile.exists()) {
-                val file = File(outFile.absolutePath).parentFile
+                val file = requireNotNull(File(outFile.absolutePath).parentFile)
                 if (!file.exists()) {
                     file.mkdirs()
                 }
@@ -28,8 +31,10 @@ object NativeAudioEngineBridge {
                 outputStream = FileOutputStream(outFile)
                 copyFile(inputStream, outputStream)
             }
+            result
         } catch (e: IOException) {
-            throw IllegalStateException("Failed to copy asset file: $assetsFilePath", e)
+            Log.e("NativeAudioEngineBridge", "$assetsFilePath not found.")
+            return null
         } finally {
             try {
                 inputStream?.close()
@@ -42,7 +47,6 @@ object NativeAudioEngineBridge {
                 e.printStackTrace()
             }
         }
-        return result
     }
 
     private fun copyFile(inputStream: InputStream, out: OutputStream) {
