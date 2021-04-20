@@ -21,6 +21,10 @@ bool AudioEngine::isAAudioRecommended() {
     return mDuplexEngine.isAAudioRecommended();
 }
 
+void AudioEngine::load(const char *filePath) {
+    mWavDecoder.load(filePath);
+}
+
 bool AudioEngine::setAudioApi(OboeApiType apiType) {
     return mDuplexEngine.setAudioApi(apiType);
 }

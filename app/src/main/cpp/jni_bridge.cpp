@@ -112,6 +112,14 @@ Java_com_yoshi991_oboe_LiveEffectEngine_isAAudioRecommended(
 }
 
 JNIEXPORT void JNICALL
+Java_com_yoshi991_oboe_LiveEffectEngine_load(
+    JNIEnv *env, jclass type, jstring filePath
+) {
+    const char *pathUTF = env->GetStringUTFChars(filePath, 0);
+    engine->load(pathUTF);
+}
+
+JNIEXPORT void JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_native_1setDefaultStreamValues(
     JNIEnv *env, jclass type, jint sampleRate, jint framesPerBurst) {
     engine->setDefaultStreamValues((int32_t) sampleRate, (int32_t) framesPerBurst);

@@ -19,7 +19,8 @@ public enum LiveEffectEngine {
 
     static native boolean setAPI(int apiType);
 
-//    static native boolean requestStart(String path);
+    static native void load(String path);
+
     static native boolean requestStart();
 
     static native boolean requestStop();

@@ -9,6 +9,7 @@
 #include "OboeApiType.h"
 #include "DuplexCallback.h"
 #include "DuplexEngine.h"
+#include "decoder/WavDecoder.h"
 
 class AudioEngine : DuplexCallback {
 public:
@@ -20,6 +21,7 @@ public:
     void setPlaybackDeviceId(int32_t deviceId);
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
+    void load(const char *filePath);
 
     bool requestStart();
     bool requestStop();
@@ -31,6 +33,7 @@ private:
     const char *kTag = "[AudioEngine]";
 
     DuplexEngine mDuplexEngine;
+    WavDecoder mWavDecoder;
 };
 
 #endif //__AUDIO_ENGINE_H__

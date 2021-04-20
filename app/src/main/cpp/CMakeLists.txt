@@ -18,11 +18,13 @@ add_library(liveEffect
         jni_bridge.cpp
         AudioEngine.cpp
         DuplexEngine.cpp
+        decoder/WavDecoder.cpp
     )
 
 target_include_directories(liveEffect
     PRIVATE
         ${SAMPLE_ROOT_DIR}
+        ${SAMPLE_ROOT_DIR}/decoder
         ${SAMPLE_ROOT_DIR}/debug-utils
     )
 
