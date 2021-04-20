@@ -235,8 +235,8 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     // It is possible that there may be fewer input than output samples.
     int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
     if (mCallback) {
-        mCallback->onInputReady(inputFloats, samplesToProcess);
-        mCallback->onOutputReady(outputFloats, samplesToProcess);
+        mCallback->onInputReady(inputFloats, inputStream->getChannelCount(), samplesToProcess);
+        mCallback->onOutputReady(outputFloats, outputStream->getChannelCount(), samplesToProcess);
     }
 
     if (mIsPlaybackMicrophone) {

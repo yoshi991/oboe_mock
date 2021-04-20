@@ -33,6 +33,7 @@ bool AudioEngine::requestStart() {
     bool success = mDuplexEngine.openStreams();
     if (success) {
         mDuplexEngine.start();
+        mWavDecoder.play();
     }
     return success;
 }
@@ -43,13 +44,24 @@ bool AudioEngine::requestStop() {
     return true;
 }
 
-void AudioEngine::onInputReady(float *inputFloats, int32_t numFrames) {
+void AudioEngine::onInputReady(
+    float *inputFloats, 
+    int32_t channelCount,
+    int32_t numFrames
+) {
     // TODO:
     for (int32_t i = 0; i < numFrames; i++) {
        *inputFloats++ *= 0.95;
-    }   
+    }
 }
 
-void AudioEngine::onOutputReady(float *outputFloats, int32_t numFrames) {
+void AudioEngine::onOutputReady(
+    float *outputFloats, 
+    int32_t channelCount,
+    int32_t numFrames
+) {
     // TODO:
+    for (int i = 0; i < channelCount; ++i) {
+        mWavDecoder.render(outputFloats + i, i, channelCount, numFrames);
+    }
 }
