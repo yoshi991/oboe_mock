@@ -51,7 +51,7 @@ void AudioEngine::onInputReady(
 ) {
     // TODO:
     for (int32_t i = 0; i < numFrames; i++) {
-       *inputFloats++ *= 0.95;
+       *inputFloats++ *= mInputGain;
     }
 }
 
@@ -63,5 +63,9 @@ void AudioEngine::onOutputReady(
     // TODO:
     for (int i = 0; i < channelCount; ++i) {
         mWavDecoder.render(outputFloats + i, i, channelCount, numFrames);
+    }
+
+    for (int32_t i = 0; i < numFrames; i++) {
+       *outputFloats++ *= mOutputGain;
     }
 }

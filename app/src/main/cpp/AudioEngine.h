@@ -32,6 +32,9 @@ public:
 private:
     const char *kTag = "[AudioEngine]";
 
+    float mInputGain = 0.95;
+    float mOutputGain = 0.1;
+
     DuplexEngine mDuplexEngine;
     WavDecoder mWavDecoder;
 };

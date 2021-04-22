@@ -22,7 +22,7 @@ void WavDecoder::render(
     int32_t channelCount,
     int32_t numFrames
 ) {
-    LOGD("channel = %1d, channelCount = %2d, numFrames = %3d", channel, channelCount, numFrames);
+    // LOGD("channel = %1d, channelCount = %2d, numFrames = %3d", channel, channelCount, numFrames);
 
     if (!isLoaded || currentPositionL < 0|| currentPositionR < 0) {
         memset(buffer, 0, sizeof(float) * numFrames);

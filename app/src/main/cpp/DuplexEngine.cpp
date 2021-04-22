@@ -241,7 +241,7 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
 
     if (mIsPlaybackMicrophone) {
         for (int32_t i = 0; i < samplesToProcess; i++) {
-            *outputFloats++ = *inputFloats++;
+            *outputFloats++ += *inputFloats++;
         }
     }
 
