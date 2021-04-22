@@ -135,7 +135,7 @@ oboe::AudioStreamBuilder DuplexEngine::createInputBuilder() {
     return *createDefaultBuilder().setDirection(oboe::Direction::Input)
             ->setDeviceId(mInputDeviceId)
             ->setSampleRate(mSampleRate)
-            ->setChannelCount(mInputChannelCount);
+            ->setChannelCount(mOutputStream->getChannelCount());
 }
 
 oboe::AudioStreamBuilder DuplexEngine::createOutputBuilder() {
