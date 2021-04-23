@@ -14,7 +14,7 @@
 class AudioEngine : DuplexCallback {
 public:
     AudioEngine();
-    virtual ~AudioEngine() = default;
+    virtual ~AudioEngine();
 
     void setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst);
     void setRecordingDeviceId(int32_t deviceId);

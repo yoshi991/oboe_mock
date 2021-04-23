@@ -4,6 +4,10 @@ AudioEngine::AudioEngine() {
     mDuplexEngine.setCallback(this);
 }
 
+AudioEngine::~AudioEngine() {
+    mDuplexEngine.setCallback(nullptr);
+}
+
 void AudioEngine::setDefaultStreamValues(int32_t sampleRate, int32_t framesPerBurst) {
     mDuplexEngine.setSampleRate(sampleRate);
     mDuplexEngine.setFramesPerBurst(framesPerBurst);
