@@ -46,7 +46,7 @@ public:
     void onErrorAfterClose(oboe::AudioStream *oboeStream, oboe::Result result) override;
 
 private:
-    const char *kTag = "[DuplexEngine]";
+    const char *TAG = "[DuplexEngine]";
 
     DuplexCallback *mCallback = nullptr;
 

@@ -30,7 +30,7 @@ public:
     void onOutputReady(float *outputFloats, int32_t channelCount, int32_t numFrames) override;
 
 private:
-    const char *kTag = "[AudioEngine]";
+    const char *TAG = "[AudioEngine]";
 
     float mInputGain = 0.95;
     float mOutputGain = 0.1;

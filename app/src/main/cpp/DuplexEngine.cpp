@@ -81,7 +81,7 @@ bool DuplexEngine::closeStreams() {
 
 bool DuplexEngine::start() {
     if (mIsPlaying) {
-        LOGE("%s: streams has already started", kTag);
+        LOGE("%s: streams has already started", TAG);
         return false;
     }
 
@@ -151,7 +151,7 @@ oboe::Result DuplexEngine::openInputStream() {
     if (result == oboe::Result::OK) {
         warnIfNotLowLatency(mInputStream);
     } else {
-        LOGE("%s: input stream open failure: %s", kTag, oboe::convertToText(result));
+        LOGE("%s: input stream open failure: %s", TAG, oboe::convertToText(result));
     }
     return result;
 }
@@ -163,7 +163,7 @@ oboe::Result DuplexEngine::openOutputStream() {
         mSampleRate = mOutputStream->getSampleRate();
         warnIfNotLowLatency(mOutputStream);
     } else {
-        LOGE("%s: output stream open failure: %s", kTag, oboe::convertToText(result));
+        LOGE("%s: output stream open failure: %s", TAG, oboe::convertToText(result));
         mSampleRate = oboe::kUnspecified;
     }
     return result;
@@ -185,11 +185,11 @@ void DuplexEngine::closeStream(std::shared_ptr<oboe::AudioStream> &stream) {
 
     oboe::Result result = stream->stop();
     if (result != oboe::Result::OK) {
-        LOGW("%s: Error stopping stream: %s", kTag, oboe::convertToText(result));
+        LOGW("%s: Error stopping stream: %s", TAG, oboe::convertToText(result));
     }
     result = stream->close();
     if (result != oboe::Result::OK) {
-        LOGE("%s: Error closing stream: %s", kTag, oboe::convertToText(result));
+        LOGE("%s: Error closing stream: %s", TAG, oboe::convertToText(result));
     }
     stream.reset();
 }
@@ -323,7 +323,8 @@ void DuplexEngine::onErrorBeforeClose(
     oboe::AudioStream *oboeStream, 
     oboe::Result result
 ) {
-    LOGE("%s stream Error before close: %s",
+    LOGE("%s: %s stream Error before close: %s",
+        TAG,
         oboe::convertToText(oboeStream->getDirection()),
         oboe::convertToText(result)
     );
@@ -339,7 +340,8 @@ void DuplexEngine::onErrorAfterClose(
     oboe::AudioStream *oboeStream, 
     oboe::Result result
 ) {
-    LOGE("%s stream Error after close: %s",
+    LOGE("%s: %s stream Error after close: %s",
+        TAG,
         oboe::convertToText(oboeStream->getDirection()),
         oboe::convertToText(result)
     );
