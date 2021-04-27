@@ -26,7 +26,22 @@ bool AudioEngine::isAAudioRecommended() {
 }
 
 void AudioEngine::load(const char *filePath) {
-    mWavDecoder.load(filePath);
+    // mWavDecoder.load(filePath);
+}
+
+bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {
+    mBGMSource = nullptr;
+
+    MemInputStream stream(buff, length);
+    WavStreamReader reader(&stream);
+    reader.parse();
+
+    SampleBuffer *sampleBuffer = new SampleBuffer();
+    sampleBuffer->loadSampleData(&reader);
+
+    mBGMSource = new OneShotSampleSource(sampleBuffer, mOutputGain);
+
+    return true;
 }
 
 bool AudioEngine::setAudioApi(OboeApiType apiType) {
@@ -65,11 +80,15 @@ void AudioEngine::onOutputReady(
     int32_t numFrames
 ) {
     // TODO:
-    for (int i = 0; i < channelCount; ++i) {
-        mWavDecoder.render(outputFloats + i, i, channelCount, numFrames);
+    // for (int i = 0; i < channelCount; ++i) {
+    //     // mWavDecoder.render(outputFloats, i, channelCount, numFrames);
+    // }
+
+    if (mBGMSource) {
+        mBGMSource->mixAudio(outputFloats, channelCount, numFrames);
     }
 
-    for (int32_t i = 0; i < numFrames; i++) {
-       *outputFloats++ *= mOutputGain;
-    }
+    // for (int32_t i = 0; i < numFrames; i++) {
+    //    *outputFloats++ *= mOutputGain;
+    // }
 }

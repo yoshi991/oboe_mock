@@ -11,6 +11,15 @@
 #include "DuplexEngine.h"
 #include "decoder/WavDecoder.h"
 
+// parselib includes
+#include "libs/parselib/stream/MemInputStream.h"
+#include "libs/parselib/wav/WavStreamReader.h"
+
+#include "libs/iolib/player/OneShotSampleSource.h"
+
+using namespace iolib;
+using namespace parselib;
+
 class AudioEngine : DuplexCallback {
 public:
     AudioEngine();
@@ -22,6 +31,7 @@ public:
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
     void load(const char *filePath);
+    bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
     bool requestStart();
     bool requestStop();
@@ -34,6 +44,8 @@ private:
 
     float mInputGain = 0.95;
     float mOutputGain = 0.1;
+
+    OneShotSampleSource *mBGMSource;
 
     DuplexEngine mDuplexEngine;
     WavDecoder mWavDecoder;

@@ -3,6 +3,7 @@ package com.yoshi991.oboe;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,9 @@ import androidx.core.app.ActivityCompat;
 import com.yoshi991.oboe.util.AudioDeviceListEntry;
 import com.yoshi991.oboe.util.AudioDeviceSpinner;
 import com.yoshi991.oboe.util.NativeAudioEngineBridge;
+
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * TODO: Update README.md and go through and comment sample
@@ -159,10 +163,25 @@ public class MainActivity extends Activity
             return;
         }
 
-        String path = NativeAudioEngineBridge.copyAssetToInternalStorage(this, "sample.wav");
-        if (path != null) {
-            LiveEffectEngine.load(path);
+        String fileName = "sample.wav";
+        String path = NativeAudioEngineBridge.copyAssetToInternalStorage(this, fileName);
+//        if (path != null) {
+//            LiveEffectEngine.load(path);
+//        }
+
+        try {
+            AssetFileDescriptor descriptor = getAssets().openFd(fileName);
+            FileInputStream dataStream = descriptor.createInputStream();
+            int len = (int) descriptor.getLength();
+            byte[] dataBytes = new byte[len];
+            dataStream.read(dataBytes, 0, len);
+            LiveEffectEngine.loadNative(dataBytes);
+
+        } catch (IOException e) {
+            Log.e("Audio Sample", "IOException");
         }
+
+
         boolean success = LiveEffectEngine.requestStart();
         if (success) {
             setSpinnersEnabled(false);
