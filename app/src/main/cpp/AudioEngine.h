@@ -39,6 +39,8 @@ public:
     void onInputReady(float *inputFloats, int32_t channelCount, int32_t numFrames) override;
     void onOutputReady(float *outputFloats, int32_t channelCount, int32_t numFrames) override;
 
+    bool isBGMPlaying();
+
 private:
     const char *TAG = "[AudioEngine]";
 

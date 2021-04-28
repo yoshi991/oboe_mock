@@ -136,4 +136,11 @@ Java_com_yoshi991_oboe_LiveEffectEngine_native_1setDefaultStreamValues(
     JNIEnv *env, jclass type, jint sampleRate, jint framesPerBurst) {
     engine->setDefaultStreamValues((int32_t) sampleRate, (int32_t) framesPerBurst);
 }
+
+JNIEXPORT jboolean JNICALL
+Java_com_yoshi991_oboe_LiveEffectEngine_isBGMPlaying(
+    JNIEnv *env, jclass type) {
+    return engine->isBGMPlaying() ? JNI_TRUE : JNI_FALSE;
+}
+
 } // extern "C"

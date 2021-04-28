@@ -77,6 +77,11 @@ bool AudioEngine::requestStop() {
     return true;
 }
 
+bool AudioEngine::isBGMPlaying() {
+    if (mBGMSource == nullptr) return false;
+    return mBGMSource->isPlaying();
+}
+
 void AudioEngine::onInputReady(
     float *inputFloats, 
     int32_t channelCount,
@@ -98,7 +103,7 @@ void AudioEngine::onOutputReady(
     //     // mWavDecoder.render(outputFloats, i, channelCount, numFrames);
     // }
 
-    if (mBGMSource && mBGMSource->isPlaying()) {
+    if (isBGMPlaying()) {
         mBGMSource->mixAudio(outputFloats, channelCount, numFrames);
     }
 
