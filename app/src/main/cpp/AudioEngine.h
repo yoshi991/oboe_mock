@@ -45,7 +45,7 @@ private:
     float mInputGain = 0.95;
     float mOutputGain = 0.1;
 
-    FILE *audioFile = nullptr;
+    FILE *mAudioFile = nullptr;
     OneShotSampleSource *mBGMSource = nullptr;
 
     DuplexEngine mDuplexEngine;

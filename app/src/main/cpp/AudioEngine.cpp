@@ -26,15 +26,17 @@ bool AudioEngine::isAAudioRecommended() {
 }
 
 bool AudioEngine::load(const char *filePath) {
-    audioFile = fopen(filePath, "rb");
-    if (audioFile == nullptr) {
+    mAudioFile = nullptr;
+
+    mAudioFile = fopen(filePath, "rb");
+    if (mAudioFile == nullptr) {
         return false;
     }
 
     unsigned char *buffers = (unsigned char *) calloc((size_t) 30000000, sizeof(unsigned char));
-    long size = fread(buffers, sizeof(short), 30000000, audioFile);
+    long size = fread(buffers, sizeof(short), 30000000, mAudioFile);
 
-    fclose(audioFile);
+    fclose(mAudioFile);
 
     return loadSampleBuffer(buffers, size);
 }
