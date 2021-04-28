@@ -176,6 +176,7 @@ public class MainActivity extends Activity
             byte[] dataBytes = new byte[len];
             dataStream.read(dataBytes, 0, len);
             LiveEffectEngine.loadNative(dataBytes);
+            descriptor.close();
 
         } catch (IOException e) {
             Log.e("Audio Sample", "IOException");

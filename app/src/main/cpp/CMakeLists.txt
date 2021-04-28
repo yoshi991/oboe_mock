@@ -38,6 +38,8 @@ find_package (oboe REQUIRED CONFIG)
 
 target_link_libraries(liveEffect
     PRIVATE
+        iolib
+        parselib
         oboe::oboe
         android
         atomic

@@ -17,9 +17,9 @@
 #include "SampleBuffer.h"
 
 // Resampler Includes
-#include "resampler/MultiChannelResampler.h"
+#include "../../flowgraph/resampler/MultiChannelResampler.h"
 
-#include "wav/WavStreamReader.h"
+#include "../../parselib/wav/WavStreamReader.h"
 
 using namespace resampler;
 
