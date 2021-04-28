@@ -168,7 +168,7 @@ public class MainActivity extends Activity
         // EXAMPLE: Send file path.
         String path = NativeAudioEngineBridge.copyAssetToInternalStorage(this, fileName);
         if (path != null) {
-            LiveEffectEngine.load(path);
+            LiveEffectEngine.loadFromAudioFile(path);
         }
 
         // EXAMPLE: Send byte array.
@@ -178,7 +178,7 @@ public class MainActivity extends Activity
 //            int len = (int) descriptor.getLength();
 //            byte[] dataBytes = new byte[len];
 //            dataStream.read(dataBytes, 0, len);
-//            LiveEffectEngine.loadNative(dataBytes);
+//            LiveEffectEngine.loadFromByteArray(dataBytes);
 //            descriptor.close();
 //
 //        } catch (IOException e) {

@@ -19,9 +19,9 @@ public enum LiveEffectEngine {
 
     static native boolean setAPI(int apiType);
 
-    static native void load(String path);
+    static native void loadFromAudioFile(String path);
 
-    static native boolean loadNative(byte[] wavBytes);
+    static native boolean loadFromByteArray(byte[] wavBytes);
 
     static native boolean requestStart();
 

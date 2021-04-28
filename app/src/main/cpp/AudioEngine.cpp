@@ -25,10 +25,10 @@ bool AudioEngine::isAAudioRecommended() {
     return mDuplexEngine.isAAudioRecommended();
 }
 
-void AudioEngine::load(const char *filePath) {
+bool AudioEngine::load(const char *filePath) {
     audioFile = fopen(filePath, "rb");
     if (audioFile == nullptr) {
-        return;
+        return false;
     }
 
     unsigned char *buffers = (unsigned char *) calloc((size_t) 30000000, sizeof(unsigned char));
@@ -36,7 +36,7 @@ void AudioEngine::load(const char *filePath) {
 
     fclose(audioFile);
 
-    loadSampleBuffer(buffers, size);
+    return loadSampleBuffer(buffers, size);
 }
 
 bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {

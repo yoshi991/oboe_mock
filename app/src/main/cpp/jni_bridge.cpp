@@ -111,16 +111,16 @@ Java_com_yoshi991_oboe_LiveEffectEngine_isAAudioRecommended(
     return engine->isAAudioRecommended() ? JNI_TRUE : JNI_FALSE;
 }
 
-JNIEXPORT void JNICALL
-Java_com_yoshi991_oboe_LiveEffectEngine_load(
+JNIEXPORT jboolean JNICALL
+Java_com_yoshi991_oboe_LiveEffectEngine_loadFromAudioFile(
     JNIEnv *env, jclass type, jstring filePath
 ) {
     const char *pathUTF = env->GetStringUTFChars(filePath, 0);
-    engine->load(pathUTF);
+    return engine->load(pathUTF);
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_yoshi991_oboe_LiveEffectEngine_loadNative(
+Java_com_yoshi991_oboe_LiveEffectEngine_loadFromByteArray(
     JNIEnv *env, jclass type, jbyteArray bytearray
 ) {
     int len = env->GetArrayLength (bytearray);

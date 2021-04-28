@@ -30,7 +30,7 @@ public:
     void setPlaybackDeviceId(int32_t deviceId);
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
-    void load(const char *filePath);
+    bool load(const char *filePath);
     bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
     bool requestStart();
