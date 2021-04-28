@@ -40,6 +40,7 @@ bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {
     sampleBuffer->loadSampleData(&reader);
 
     mBGMSource = new OneShotSampleSource(sampleBuffer, mOutputGain);
+    mBGMSource->setPlayMode();
     delete[] buff;
 
     return true;
@@ -85,7 +86,7 @@ void AudioEngine::onOutputReady(
     //     // mWavDecoder.render(outputFloats, i, channelCount, numFrames);
     // }
 
-    if (mBGMSource) {
+    if (mBGMSource && mBGMSource->isPlaying()) {
         mBGMSource->mixAudio(outputFloats, channelCount, numFrames);
     }
 
