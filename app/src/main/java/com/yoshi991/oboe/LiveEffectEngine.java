@@ -21,7 +21,7 @@ public enum LiveEffectEngine {
 
     static native void load(String path);
 
-    static native void loadNative(byte[] wavBytes);
+    static native boolean loadNative(byte[] wavBytes);
 
     static native boolean requestStart();
 

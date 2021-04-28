@@ -14,9 +14,10 @@ add_library(iolib
         ${CMAKE_CURRENT_LIST_DIR}/player/SampleSource.cpp
         ${CMAKE_CURRENT_LIST_DIR}/player/SampleBuffer.cpp
         ${CMAKE_CURRENT_LIST_DIR}/player/OneShotSampleSource.cpp
-        # ${CMAKE_CURRENT_LIST_DIR}/player/SimpleMultiPlayer.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/player/SimpleMultiPlayer.cpp
     )
 
 target_link_libraries(iolib
+        oboe::oboe
         log
     )

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.6)
 
 add_library(parselib
     STATIC
-        # ${CMAKE_CURRENT_LIST_DIR}/stream/FileInputStream.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/stream/FileInputStream.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stream/InputStream.cpp
         ${CMAKE_CURRENT_LIST_DIR}/stream/MemInputStream.cpp
 
