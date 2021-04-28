@@ -26,7 +26,17 @@ bool AudioEngine::isAAudioRecommended() {
 }
 
 void AudioEngine::load(const char *filePath) {
-    // mWavDecoder.load(filePath);
+    audioFile = fopen(filePath, "rb");
+    if (audioFile == nullptr) {
+        return;
+    }
+
+    unsigned char *buffers = (unsigned char *) calloc((size_t) 30000000, sizeof(unsigned char));
+    long size = fread(buffers, sizeof(short), 30000000, audioFile);
+
+    fclose(audioFile);
+
+    loadSampleBuffer(buffers, size);
 }
 
 bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {

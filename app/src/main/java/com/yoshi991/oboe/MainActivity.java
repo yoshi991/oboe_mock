@@ -164,23 +164,26 @@ public class MainActivity extends Activity
         }
 
         String fileName = "sample.wav";
+
+        // EXAMPLE: Send file path.
         String path = NativeAudioEngineBridge.copyAssetToInternalStorage(this, fileName);
-//        if (path != null) {
-//            LiveEffectEngine.load(path);
-//        }
-
-        try {
-            AssetFileDescriptor descriptor = getAssets().openFd(fileName);
-            FileInputStream dataStream = descriptor.createInputStream();
-            int len = (int) descriptor.getLength();
-            byte[] dataBytes = new byte[len];
-            dataStream.read(dataBytes, 0, len);
-            LiveEffectEngine.loadNative(dataBytes);
-            descriptor.close();
-
-        } catch (IOException e) {
-            Log.e("Audio Sample", "IOException");
+        if (path != null) {
+            LiveEffectEngine.load(path);
         }
+
+        // EXAMPLE: Send byte array.
+//        try {
+//            AssetFileDescriptor descriptor = getAssets().openFd(fileName);
+//            FileInputStream dataStream = descriptor.createInputStream();
+//            int len = (int) descriptor.getLength();
+//            byte[] dataBytes = new byte[len];
+//            dataStream.read(dataBytes, 0, len);
+//            LiveEffectEngine.loadNative(dataBytes);
+//            descriptor.close();
+//
+//        } catch (IOException e) {
+//            Log.e("Audio Sample", "IOException");
+//        }
 
 
         boolean success = LiveEffectEngine.requestStart();
