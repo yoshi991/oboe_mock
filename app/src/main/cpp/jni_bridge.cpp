@@ -123,7 +123,7 @@ JNIEXPORT jboolean JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_loadNative(
     JNIEnv *env, jclass type, jbyteArray bytearray
 ) {
-   int len = env->GetArrayLength (bytearray);
+    int len = env->GetArrayLength (bytearray);
 
     unsigned char* buf = new unsigned char[len];
     env->GetByteArrayRegion (bytearray, 0, len, reinterpret_cast<jbyte*>(buf));
