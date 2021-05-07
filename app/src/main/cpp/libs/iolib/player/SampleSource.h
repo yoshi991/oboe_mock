@@ -44,10 +44,12 @@ public:
     }
     virtual ~SampleSource() {}
 
-    void setPlayMode() { mCurFrameIndex = 0; mIsPlaying = true; }
-    void setStopMode() { mIsPlaying = false; mCurFrameIndex = 0; }
+    void setPlayMode() { mCurFrameIndex = 0; mIsPlaying = true; mIsPaused = false; }
+    void setStopMode() { mCurFrameIndex = 0; mIsPlaying = false; mIsPaused = false; }
+    void setPauseMode() { mIsPaused = true; }
 
     bool isPlaying() { return mIsPlaying; }
+    bool isPaused() { return mIsPaused; }
 
     void setPan(float pan) {
         if (pan < PAN_HARDLEFT) {
@@ -79,6 +81,7 @@ protected:
     int32_t mCurFrameIndex;
 
     bool mIsPlaying;
+    bool mIsPaused;
 
     // Logical pan value
     float mPan;

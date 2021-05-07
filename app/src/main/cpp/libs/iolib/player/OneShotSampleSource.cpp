@@ -24,7 +24,7 @@ namespace iolib {
 
 void OneShotSampleSource::mixAudio(float* outBuff, int numChannels, int32_t numFrames) {
     int32_t numSampleFrames = mSampleBuffer->getNumSampleFrames();
-    int32_t numWriteFrames = mIsPlaying
+    int32_t numWriteFrames = mIsPlaying || mIsPaused
                          ? std::min(numFrames, numSampleFrames - mCurFrameIndex)
                          : 0;
 

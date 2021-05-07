@@ -21,6 +21,9 @@ public:
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended();
 
+    int32_t getSampleRate();
+    int32_t getChannelCount();
+
     void setPlaybackMicrophone(bool enabled);
     void setMute(bool isMute);
 

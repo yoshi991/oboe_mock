@@ -28,6 +28,14 @@ bool DuplexEngine::isAAudioRecommended() {
     return oboe::AudioStreamBuilder::isAAudioRecommended();
 }
 
+int32_t DuplexEngine::getSampleRate() {
+    return mSampleRate;
+}
+
+int32_t DuplexEngine::getChannelCount() {
+    return mOutputChannelCount;
+}
+
 bool DuplexEngine::setAudioApi(OboeApiType apiType) {
     if (mIsPlaying) return false;
 
