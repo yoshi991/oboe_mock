@@ -30,7 +30,8 @@ public:
     void setPlaybackDeviceId(int32_t deviceId);
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
-    bool load(const char *filePath);
+    bool setAudioFilePath(const char *filePath);
+    bool load();
     bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
     bool requestStart();
@@ -40,13 +41,18 @@ public:
     void onOutputReady(float *outputFloats, int32_t channelCount, int32_t numFrames) override;
 
     bool isBGMPlaying();
+    bool isBGMPaused();
 
 private:
     const char *TAG = "[AudioEngine]";
+    
+    const uint16_t kBitPerSample = 16;
 
     float mInputGain = 0.95;
     float mOutputGain = 0.1;
 
+    uint32_t mBufferSize;
+    const char *mAudioFilePath = nullptr;
     FILE *mAudioFile = nullptr;
     OneShotSampleSource *mBGMSource = nullptr;
 

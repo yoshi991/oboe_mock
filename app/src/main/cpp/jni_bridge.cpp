@@ -116,7 +116,7 @@ Java_com_yoshi991_oboe_LiveEffectEngine_loadFromAudioFile(
     JNIEnv *env, jclass type, jstring filePath
 ) {
     const char *pathUTF = env->GetStringUTFChars(filePath, 0);
-    return engine->load(pathUTF);
+    return engine->setAudioFilePath(pathUTF);
 }
 
 JNIEXPORT jboolean JNICALL

@@ -25,16 +25,22 @@ bool AudioEngine::isAAudioRecommended() {
     return mDuplexEngine.isAAudioRecommended();
 }
 
-bool AudioEngine::load(const char *filePath) {
+bool AudioEngine::setAudioFilePath(const char *filePath) {
+    mAudioFilePath = filePath;
+    return true;
+}
+
+bool AudioEngine::load() {
     mAudioFile = nullptr;
 
-    mAudioFile = fopen(filePath, "rb");
+    mAudioFile = fopen(mAudioFilePath, "rb");
     if (mAudioFile == nullptr) {
         return false;
     }
 
-    unsigned char *buffers = (unsigned char *) calloc((size_t) 30000000, sizeof(unsigned char));
-    long size = fread(buffers, sizeof(short), 30000000, mAudioFile);
+    mBufferSize = mDuplexEngine.getSampleRate() * 1000 * mDuplexEngine.getChannelCount() * kBitPerSample;
+    unsigned char *buffers = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
+    long size = fread(buffers, sizeof(short), mBufferSize, mAudioFile);
 
     fclose(mAudioFile);
 
@@ -66,12 +72,13 @@ bool AudioEngine::requestStart() {
     bool success = mDuplexEngine.openStreams();
     if (success) {
         mDuplexEngine.start();
-        mWavDecoder.play();
+        load();
     }
     return success;
 }
 
 bool AudioEngine::requestStop() {
+    mBGMSource->setPauseMode();
     mDuplexEngine.stop();
     mDuplexEngine.closeStreams();
     return true;
@@ -80,6 +87,11 @@ bool AudioEngine::requestStop() {
 bool AudioEngine::isBGMPlaying() {
     if (mBGMSource == nullptr) return false;
     return mBGMSource->isPlaying();
+}
+
+bool AudioEngine::isBGMPaused() {
+    if (mBGMSource == nullptr) return false;
+    return mBGMSource->isPaused();
 }
 
 void AudioEngine::onInputReady(
