@@ -6,6 +6,7 @@
 #include <variant>
 
 #include "logging_macros.h"
+#include "AudioCommon.h"
 #include "OboeApiType.h"
 #include "DuplexCallback.h"
 #include "DuplexEngine.h"
@@ -58,6 +59,8 @@ private:
 
     DuplexEngine mDuplexEngine;
     WavDecoder mWavDecoder;
+
+    SampleFormat format;
 };
 
 #endif //__AUDIO_ENGINE_H__

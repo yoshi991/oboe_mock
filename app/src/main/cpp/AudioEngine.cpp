@@ -61,6 +61,11 @@ bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {
     mBGMSource->setPlayMode();
     delete[] buff;
 
+    format.channels = reader.getNumChannels();
+    // format.framesPerBuf = framesPerBuf
+    format.pcmFormat = reader.getSampleEncoding();
+    format.sampleRate = reader.getSampleRate();
+
     return true;
 }
 
