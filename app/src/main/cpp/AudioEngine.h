@@ -6,20 +6,10 @@
 #include <variant>
 
 #include "logging_macros.h"
-#include "AudioCommon.h"
 #include "OboeApiType.h"
 #include "DuplexCallback.h"
 #include "DuplexEngine.h"
 #include "decoder/WavDecoder.h"
-
-// parselib includes
-#include "libs/parselib/stream/MemInputStream.h"
-#include "libs/parselib/wav/WavStreamReader.h"
-
-#include "libs/iolib/player/OneShotSampleSource.h"
-
-using namespace iolib;
-using namespace parselib;
 
 class AudioEngine : DuplexCallback {
 public:
@@ -46,21 +36,12 @@ public:
 
 private:
     const char *TAG = "[AudioEngine]";
-    
-    const uint16_t kBitPerSample = 16;
 
     float mInputGain = 0.95;
     float mOutputGain = 0.1;
 
-    uint32_t mBufferSize;
-    const char *mAudioFilePath = nullptr;
-    FILE *mAudioFile = nullptr;
-    OneShotSampleSource *mBGMSource = nullptr;
-
     DuplexEngine mDuplexEngine;
     WavDecoder mWavDecoder;
-
-    SampleFormat format;
 };
 
 #endif //__AUDIO_ENGINE_H__
