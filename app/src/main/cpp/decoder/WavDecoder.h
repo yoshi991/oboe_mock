@@ -23,6 +23,9 @@ public:
 
     bool setAudioFilePath(const char *filePath);
 
+    bool open();
+    bool close();
+
     bool load(int32_t sampleRate, int32_t channelCount);
     bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
@@ -41,11 +44,23 @@ private:
     const char *mAudioFilePath = nullptr;
     FILE *mAudioFile = nullptr;
 
-    // float *buffers;
+    unsigned char *mBGMBuffer;
     uint32_t mBufferSize;
-
     OneShotSampleSource *mBGMSource = nullptr;
     SampleFormat format;
+
+    int32_t mCurFrameIndex;
+
+    OneShotSampleSource* createSampleSource(unsigned char *buff, int32_t length);
+    void getDataFloat(unsigned char *buff, int32_t length, float *data);
+
+    static float shortToFloat(int16_t i) {
+        float f;
+        f = ((float) i) / (float) 32768;
+        if (f > 1) f = 1;
+        if (f < -1) f = -1;
+        return f;
+    };
 
 };
 

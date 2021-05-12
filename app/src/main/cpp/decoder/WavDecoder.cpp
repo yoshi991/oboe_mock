@@ -5,27 +5,49 @@ bool WavDecoder::setAudioFilePath(const char *filePath) {
     return true;
 }
 
-bool WavDecoder::load(int32_t sampleRate, int32_t channelCount) {
+bool WavDecoder::open() {
     mAudioFile = nullptr;
 
     mAudioFile = fopen(mAudioFilePath, "rb");
     if (mAudioFile == nullptr) {
         return false;
     }
-
-    mBufferSize = sampleRate * 1000 * channelCount * kBitPerSample;
-    unsigned char *buffers = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
-    long size = fread(buffers, sizeof(short), mBufferSize, mAudioFile);
-
-    fclose(mAudioFile);
-
-    return loadSampleBuffer(buffers, size);
+    return true;
 }
 
+bool WavDecoder::close() {
+    if (mAudioFile == nullptr) {
+        return false;
+    }
+    fclose(mAudioFile);
+    mAudioFile = nullptr;
+    return true;
+}
+
+bool WavDecoder::load(int32_t sampleRate, int32_t channelCount) {
+    open();
+
+    mBufferSize = sampleRate * 1000 * channelCount * kBitPerSample;
+    mBGMBuffer = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
+    long size = fread(mBGMBuffer, sizeof(short), mBufferSize, mAudioFile);
+
+    close();
+    return loadSampleBuffer(mBGMBuffer, size);
+}
 
 bool WavDecoder::loadSampleBuffer(unsigned char *buff, int32_t length) {
     mBGMSource = nullptr;
+    mBGMSource = createSampleSource(buff, length);
 
+    // format.channels = reader.getNumChannels();
+    // format.framesPerBuf = framesPerBuf
+    // format.pcmFormat = reader.getSampleEncoding();
+    // format.sampleRate = reader.getSampleRate();
+
+    return true;
+}
+
+OneShotSampleSource* WavDecoder::createSampleSource(unsigned char *buff, int32_t length) {
     MemInputStream stream(buff, length);
     WavStreamReader reader(&stream);
     reader.parse();
@@ -33,16 +55,17 @@ bool WavDecoder::loadSampleBuffer(unsigned char *buff, int32_t length) {
     SampleBuffer *sampleBuffer = new SampleBuffer();
     sampleBuffer->loadSampleData(&reader);
 
-    mBGMSource = new OneShotSampleSource(sampleBuffer, mOutputGain);
-    mBGMSource->setPlayMode();
+    OneShotSampleSource *sampleSource = new OneShotSampleSource(sampleBuffer, mOutputGain);
+    sampleSource->setPlayMode();
     delete[] buff;
+    return sampleSource;
+}
 
-    format.channels = reader.getNumChannels();
-    // format.framesPerBuf = framesPerBuf
-    format.pcmFormat = reader.getSampleEncoding();
-    format.sampleRate = reader.getSampleRate();
-
-    return true;
+void WavDecoder::getDataFloat(unsigned char *buff, int32_t length, float *data) {
+    MemInputStream stream(buff, length);
+    WavStreamReader reader(&stream);
+    reader.parse();
+    reader.getDataFloat(data, reader.getNumSampleFrames());
 }
 
 void WavDecoder::render(
@@ -50,34 +73,41 @@ void WavDecoder::render(
     int32_t channelCount,
     int32_t numFrames
 ) {
-    // if (!isLoaded || currentPositionL < 0|| currentPositionR < 0) {
-    //     memset(buffer, 0, sizeof(float) * numFrames);
-    //     return;
-    // }
-
-    // if (channel == 0) {
-    //     for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
-    //         buffer[sampleIndex] = shortToFloat(buffers[currentPositionL]);
-    //         sampleIndex += channelCount;
-    //         currentPositionL += channelCount;
-    //     }
-    //     if (currentPositionL >= size) {
-    //         currentPositionL = -1;
-    //     }
-    // } else {
-    //     for (int i = 0, sampleIndex = 0; i < numFrames; i++) {
-    //         buffer[sampleIndex] = shortToFloat(buffers[currentPositionR]);
-    //         sampleIndex += channelCount;
-    //         currentPositionR += channelCount;
-    //     }
-    //     if (currentPositionR >= size) {
-    //         currentPositionR = -1;
-    //     }
-    // }
-
     if (isBGMPlaying()) {
         mBGMSource->mixAudio(buffer, channelCount, numFrames);
     }
+
+    // if (mAudioFile == nullptr) return;
+
+    // uint32_t samples = numFrames * channelCount;
+    // int16_t *buffer = (int16_t *) calloc((size_t) samples, sizeof(int16_t));
+    // unsigned char *buffer = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
+    // uint32_t size = fread(buffer, 1, samples, mAudioFile);
+    // float *data = new float[samples];
+
+    // getDataFloat(buffer, size, data);
+
+    // int32_t samples = format.channels * format.sampleRate;
+    // float *data = new float[samples];
+    // getDataFloat(buffer, samples, data);
+
+    // int32_t index = 0;
+    // if (channelCount == 1) {
+    //     // MONO output
+    //     for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+    //         outputFloats[frameIndex] += buffer[index++];
+    //     }
+    // } else if (channelCount == 2) {
+    //     // STEREO output
+    //         int dstSampleIndex = 0;
+    //     for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+    //         outputFloats[dstSampleIndex++] += buffer[index];
+    //         outputFloats[dstSampleIndex++] += buffer[index++];
+    //     }
+    // }
+
+    // delete[] buffer;
+    // delete[] data;
 }
 
 bool WavDecoder::isBGMPlaying() {
