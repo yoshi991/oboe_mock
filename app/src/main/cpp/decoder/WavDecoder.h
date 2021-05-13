@@ -39,7 +39,8 @@ private:
     static const long MAX_FILE_SIZE = 30000000;
     const uint16_t kBitPerSample = 16;
 
-    float mOutputGain = 1;
+    bool mIsPlaying = false;
+    float mOutputGain = 0.3;
 
     const char *mAudioFilePath = nullptr;
     FILE *mAudioFile = nullptr;

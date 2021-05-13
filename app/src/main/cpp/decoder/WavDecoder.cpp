@@ -12,6 +12,7 @@ bool WavDecoder::open() {
     if (mAudioFile == nullptr) {
         return false;
     }
+    mIsPlaying = true;
     return true;
 }
 
@@ -69,50 +70,40 @@ void WavDecoder::getDataFloat(unsigned char *buff, int32_t length, float *data) 
 }
 
 void WavDecoder::render(
-    float *buffer,
+    float *outputFloats,
     int32_t channelCount,
     int32_t numFrames
 ) {
-    if (isBGMPlaying()) {
-        mBGMSource->mixAudio(buffer, channelCount, numFrames);
+    if (!mIsPlaying || numFrames == 0 || mAudioFile == nullptr) return;
+
+    uint32_t samples = numFrames * channelCount;
+    memset(outputFloats, 0, sizeof(float) * numFrames);
+
+    int16_t *buffer = (int16_t *) calloc((size_t) samples, sizeof(int16_t));
+    uint32_t size = fread(buffer, sizeof(short), samples, mAudioFile);
+    if (size == 0) {
+        mIsPlaying = false;
+        delete[] buffer;
+        return;
     }
 
-    // if (mAudioFile == nullptr) return;
-
-    // uint32_t samples = numFrames * channelCount;
-    // int16_t *buffer = (int16_t *) calloc((size_t) samples, sizeof(int16_t));
-    // unsigned char *buffer = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
-    // uint32_t size = fread(buffer, 1, samples, mAudioFile);
-    // float *data = new float[samples];
-
-    // getDataFloat(buffer, size, data);
-
-    // int32_t samples = format.channels * format.sampleRate;
-    // float *data = new float[samples];
-    // getDataFloat(buffer, samples, data);
-
-    // int32_t index = 0;
-    // if (channelCount == 1) {
-    //     // MONO output
-    //     for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
-    //         outputFloats[frameIndex] += buffer[index++];
-    //     }
-    // } else if (channelCount == 2) {
-    //     // STEREO output
-    //         int dstSampleIndex = 0;
-    //     for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
-    //         outputFloats[dstSampleIndex++] += buffer[index];
-    //         outputFloats[dstSampleIndex++] += buffer[index++];
-    //     }
-    // }
-
-    // delete[] buffer;
-    // delete[] data;
+    if (channelCount == 1) {
+        for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+            outputFloats[frameIndex] = shortToFloat(buffer[frameIndex]) * mOutputGain;
+        }
+    } else if (channelCount == 2) {
+        int dstSampleIndex = 0;
+        int currentIndex = 0;
+        for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+            outputFloats[dstSampleIndex++] = shortToFloat(buffer[currentIndex]) * mOutputGain;
+            outputFloats[dstSampleIndex++] = shortToFloat(buffer[currentIndex++]) * mOutputGain;
+        }
+    }
+    delete[] buffer;
 }
 
 bool WavDecoder::isBGMPlaying() {
-    if (mBGMSource == nullptr) return false;
-    return mBGMSource->isPlaying();
+    return mIsPlaying;
 }
 
 bool WavDecoder::isBGMPaused() {
@@ -123,4 +114,3 @@ bool WavDecoder::isBGMPaused() {
 void WavDecoder::setPauseMode() {
     mBGMSource->setPauseMode();
 }
-

@@ -44,8 +44,8 @@ bool AudioEngine::setAudioApi(OboeApiType apiType) {
 bool AudioEngine::requestStart() {
     bool success = mDuplexEngine.openStreams();
     if (success) {
-        // mWavDecoder.open();
-        mWavDecoder.load(mDuplexEngine.getSampleRate(), mDuplexEngine.getChannelCount());
+        mWavDecoder.open();
+        // mWavDecoder.load(mDuplexEngine.getSampleRate(), mDuplexEngine.getChannelCount());
         mDuplexEngine.start();
     }
     return success;
