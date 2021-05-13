@@ -8,10 +8,8 @@ project(liveEffect LANGUAGES C CXX)
 
 get_filename_component(SAMPLE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
 set (PARSELIB_DIR libs/parselib)
-set (IOLIB_DIR libs/iolib)
 
 include(${PARSELIB_DIR}/CMakeLists.txt)
-include(${IOLIB_DIR}/CMakeLists.txt)
 
 include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
@@ -38,7 +36,6 @@ find_package (oboe REQUIRED CONFIG)
 
 target_link_libraries(liveEffect
     PRIVATE
-        iolib
         parselib
         oboe::oboe
         android
