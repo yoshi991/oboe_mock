@@ -22,8 +22,6 @@ public:
     bool setAudioApi(OboeApiType apiType);
     bool isAAudioRecommended(void);
     bool setAudioFilePath(const char *filePath);
-    bool load();
-    bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
     bool requestStart();
     bool requestStop();
@@ -32,7 +30,6 @@ public:
     void onOutputReady(float *outputFloats, int32_t channelCount, int32_t numFrames) override;
 
     bool isBGMPlaying();
-    bool isBGMPaused();
 
 private:
     const char *TAG = "[AudioEngine]";

@@ -11,9 +11,6 @@
 #include "../libs/parselib/stream/MemInputStream.h"
 #include "../libs/parselib/wav/WavStreamReader.h"
 
-#include "../libs/iolib/player/OneShotSampleSource.h"
-
-using namespace iolib;
 using namespace parselib;
 
 class WavDecoder {
@@ -23,37 +20,25 @@ public:
 
     bool setAudioFilePath(const char *filePath);
 
-    bool open();
+    bool open(int32_t sampleRate, int32_t framesPerBurst);
     bool close();
-
-    bool load(int32_t sampleRate, int32_t channelCount);
-    bool loadSampleBuffer(unsigned char *buff, int32_t length);
 
     void render(float *buffer, int32_t channelCount, int32_t numFrames);
 
     bool isBGMPlaying();
-    bool isBGMPaused();
-    void setPauseMode();
 
 private:
-    static const long MAX_FILE_SIZE = 30000000;
-    const uint16_t kBitPerSample = 16;
-
     bool mIsPlaying = false;
     float mOutputGain = 0.3;
+
+    int32_t mSampleRate;
 
     const char *mAudioFilePath = nullptr;
     FILE *mAudioFile = nullptr;
 
-    unsigned char *mBGMBuffer;
-    uint32_t mBufferSize;
-    OneShotSampleSource *mBGMSource = nullptr;
     SampleFormat format;
 
-    int32_t mCurFrameIndex;
-
-    OneShotSampleSource* createSampleSource(unsigned char *buff, int32_t length);
-    void getDataFloat(unsigned char *buff, int32_t length, float *data);
+    void analyzeWavInfo(int32_t sampleRate, int32_t framesPerBurst);
 
     static float shortToFloat(int16_t i) {
         float f;

@@ -5,13 +5,15 @@ bool WavDecoder::setAudioFilePath(const char *filePath) {
     return true;
 }
 
-bool WavDecoder::open() {
+bool WavDecoder::open(int32_t sampleRate, int32_t framesPerBurst) {
     mAudioFile = nullptr;
 
     mAudioFile = fopen(mAudioFilePath, "rb");
     if (mAudioFile == nullptr) {
         return false;
     }
+
+    analyzeWavInfo(sampleRate, framesPerBurst);
     mIsPlaying = true;
     return true;
 }
@@ -25,48 +27,23 @@ bool WavDecoder::close() {
     return true;
 }
 
-bool WavDecoder::load(int32_t sampleRate, int32_t channelCount) {
-    open();
+void WavDecoder::analyzeWavInfo(int32_t sampleRate, int32_t framesPerBurst) {
+    if (mAudioFile == nullptr) return;
 
-    mBufferSize = sampleRate * 1000 * channelCount * kBitPerSample;
-    mBGMBuffer = (unsigned char *) calloc((size_t) mBufferSize, sizeof(unsigned char));
-    long size = fread(mBGMBuffer, sizeof(short), mBufferSize, mAudioFile);
+    uint32_t samples = sampleRate;
+    unsigned char *buffer = (unsigned char *) calloc((size_t) samples, sizeof(unsigned char));
+    uint32_t size = fread(buffer, sizeof(short), samples, mAudioFile);
+    
+    MemInputStream stream(buffer, size);
+    delete[] buffer;
 
-    close();
-    return loadSampleBuffer(mBGMBuffer, size);
-}
-
-bool WavDecoder::loadSampleBuffer(unsigned char *buff, int32_t length) {
-    mBGMSource = nullptr;
-    mBGMSource = createSampleSource(buff, length);
-
-    // format.channels = reader.getNumChannels();
-    // format.framesPerBuf = framesPerBuf
-    // format.pcmFormat = reader.getSampleEncoding();
-    // format.sampleRate = reader.getSampleRate();
-
-    return true;
-}
-
-OneShotSampleSource* WavDecoder::createSampleSource(unsigned char *buff, int32_t length) {
-    MemInputStream stream(buff, length);
     WavStreamReader reader(&stream);
     reader.parse();
 
-    SampleBuffer *sampleBuffer = new SampleBuffer();
-    sampleBuffer->loadSampleData(&reader);
-
-    OneShotSampleSource *sampleSource = new OneShotSampleSource(sampleBuffer, mOutputGain);
-    sampleSource->setPlayMode();
-    delete[] buff;
-    return sampleSource;
-}
-
-void WavDecoder::getDataFloat(unsigned char *buff, int32_t length, float *data) {
-    MemInputStream stream(buff, length);
-    WavStreamReader reader(&stream);
-    reader.parse();
-    reader.getDataFloat(data, reader.getNumSampleFrames());
+    format.sampleRate = sampleRate;
+    format.framesPerBuf = framesPerBurst;
+    format.channels = reader.getNumChannels();
+    format.pcmFormat = reader.getSampleEncoding();
 }
 
 void WavDecoder::render(
@@ -80,21 +57,22 @@ void WavDecoder::render(
     memset(outputFloats, 0, sizeof(float) * numFrames);
 
     int16_t *buffer = (int16_t *) calloc((size_t) samples, sizeof(int16_t));
-    uint32_t size = fread(buffer, sizeof(short), samples, mAudioFile);
+    int32_t size = fread(buffer, sizeof(short), samples, mAudioFile);
     if (size == 0) {
         mIsPlaying = false;
         delete[] buffer;
         return;
     }
 
+    int32_t numWriteFrames = std::min(numFrames, size);
     if (channelCount == 1) {
-        for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+        for (int32_t frameIndex = 0; frameIndex < numWriteFrames; frameIndex++) {
             outputFloats[frameIndex] = shortToFloat(buffer[frameIndex]) * mOutputGain;
         }
     } else if (channelCount == 2) {
         int dstSampleIndex = 0;
         int currentIndex = 0;
-        for (int32_t frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+        for (int32_t frameIndex = 0; frameIndex < numWriteFrames; frameIndex++) {
             outputFloats[dstSampleIndex++] = shortToFloat(buffer[currentIndex]) * mOutputGain;
             outputFloats[dstSampleIndex++] = shortToFloat(buffer[currentIndex++]) * mOutputGain;
         }
@@ -104,13 +82,4 @@ void WavDecoder::render(
 
 bool WavDecoder::isBGMPlaying() {
     return mIsPlaying;
-}
-
-bool WavDecoder::isBGMPaused() {
-    if (mBGMSource == nullptr) return false;
-    return mBGMSource->isPaused();
-}
-
-void WavDecoder::setPauseMode() {
-    mBGMSource->setPauseMode();
 }

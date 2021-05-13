@@ -49,10 +49,10 @@ target_link_libraries(liveEffect
 # Enable optimization flags: if having problems with source level debugging,
 # disable -Ofast ( and debug ), re-enable it after done debugging.
 # target_compile_options(liveEffect PRIVATE -Wall -Werror "$<$<CONFIG:RELEASE>:-Ofast>")
-# if(MSVC)
-#     target_compile_options(liveEffect PRIVATE /W4 /WX)
-# else()
-#     target_compile_options(liveEffect PRIVATE -Wall -Wextra -pedantic)
-# endif()
+if(MSVC)
+    target_compile_options(liveEffect PRIVATE /W4 /WX)
+else()
+    target_compile_options(liveEffect PRIVATE -Wall -Wextra -pedantic)
+endif()
 
 target_compile_options(liveEffect PRIVATE -Ofast)

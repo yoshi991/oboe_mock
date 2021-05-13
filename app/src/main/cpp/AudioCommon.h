@@ -17,10 +17,10 @@
 #define BUF_COUNT 32
 
 struct SampleFormat {
-    int sampleRate;
-    int framesPerBuf;
-    int channels;
-    int pcmFormat;  // 8 bit, 16 bit, 24 bit ...
+    int32_t sampleRate;
+    int32_t framesPerBuf;
+    int32_t channels;
+    int32_t pcmFormat;  // 8 bit, 16 bit, 24 bit ...
 };
 
 #endif //__AUDIO_COMMON_H__

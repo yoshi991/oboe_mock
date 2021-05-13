@@ -171,21 +171,6 @@ public class MainActivity extends Activity
             LiveEffectEngine.loadFromAudioFile(path);
         }
 
-        // EXAMPLE: Send byte array.
-//        try {
-//            AssetFileDescriptor descriptor = getAssets().openFd(fileName);
-//            FileInputStream dataStream = descriptor.createInputStream();
-//            int len = (int) descriptor.getLength();
-//            byte[] dataBytes = new byte[len];
-//            dataStream.read(dataBytes, 0, len);
-//            LiveEffectEngine.loadFromByteArray(dataBytes);
-//            descriptor.close();
-//
-//        } catch (IOException e) {
-//            Log.e("Audio Sample", "IOException");
-//        }
-
-
         boolean success = LiveEffectEngine.requestStart();
         if (success) {
             setSpinnersEnabled(false);

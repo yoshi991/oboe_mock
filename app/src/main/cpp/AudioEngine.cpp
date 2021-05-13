@@ -29,14 +29,6 @@ bool AudioEngine::setAudioFilePath(const char *filePath) {
     return mWavDecoder.setAudioFilePath(filePath);
 }
 
-bool AudioEngine::load() {
-    return mWavDecoder.load(mDuplexEngine.getSampleRate(), mDuplexEngine.getChannelCount());
-}
-
-bool AudioEngine::loadSampleBuffer(unsigned char *buff, int32_t length) {
-    return  mWavDecoder.loadSampleBuffer(buff, length);
-}
-
 bool AudioEngine::setAudioApi(OboeApiType apiType) {
     return mDuplexEngine.setAudioApi(apiType);
 }
@@ -44,8 +36,7 @@ bool AudioEngine::setAudioApi(OboeApiType apiType) {
 bool AudioEngine::requestStart() {
     bool success = mDuplexEngine.openStreams();
     if (success) {
-        mWavDecoder.open();
-        // mWavDecoder.load(mDuplexEngine.getSampleRate(), mDuplexEngine.getChannelCount());
+        mWavDecoder.open(mDuplexEngine.getSampleRate(), mDuplexEngine.getChannelCount());
         mDuplexEngine.start();
     }
     return success;
@@ -62,16 +53,11 @@ bool AudioEngine::isBGMPlaying() {
     return mWavDecoder.isBGMPlaying();
 }
 
-bool AudioEngine::isBGMPaused() {
-    return mWavDecoder.isBGMPaused();
-}
-
 void AudioEngine::onInputReady(
     float *inputFloats, 
     int32_t channelCount,
     int32_t numFrames
 ) {
-    // TODO:
     for (int32_t i = 0; i < numFrames; i++) {
        *inputFloats++ *= mInputGain;
     }
@@ -82,14 +68,5 @@ void AudioEngine::onOutputReady(
     int32_t channelCount,
     int32_t numFrames
 ) {
-    // TODO:
-    // for (int i = 0; i < channelCount; ++i) {
-    //     // mWavDecoder.render(outputFloats, i, channelCount, numFrames);
-    // }
-
     mWavDecoder.render(outputFloats, channelCount, numFrames);
-
-    // for (int32_t i = 0; i < numFrames; i++) {
-    //    *outputFloats++ *= mOutputGain;
-    // }
 }

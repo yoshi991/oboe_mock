@@ -119,18 +119,6 @@ Java_com_yoshi991_oboe_LiveEffectEngine_loadFromAudioFile(
     return engine->setAudioFilePath(pathUTF);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_com_yoshi991_oboe_LiveEffectEngine_loadFromByteArray(
-    JNIEnv *env, jclass type, jbyteArray bytearray
-) {
-    int len = env->GetArrayLength (bytearray);
-
-    unsigned char* buf = new unsigned char[len];
-    env->GetByteArrayRegion (bytearray, 0, len, reinterpret_cast<jbyte*>(buf));
-
-    return engine->loadSampleBuffer(buf, len) ? JNI_TRUE : JNI_FALSE;
-}
-
 JNIEXPORT void JNICALL
 Java_com_yoshi991_oboe_LiveEffectEngine_native_1setDefaultStreamValues(
     JNIEnv *env, jclass type, jint sampleRate, jint framesPerBurst) {

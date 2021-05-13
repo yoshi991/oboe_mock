@@ -21,8 +21,6 @@ public enum LiveEffectEngine {
 
     static native void loadFromAudioFile(String path);
 
-    static native boolean loadFromByteArray(byte[] wavBytes);
-
     static native boolean requestStart();
 
     static native boolean requestStop();
