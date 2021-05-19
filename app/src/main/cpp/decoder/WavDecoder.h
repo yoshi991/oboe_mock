@@ -41,11 +41,9 @@ private:
     void analyzeWavInfo(int32_t sampleRate, int32_t framesPerBurst);
 
     static float shortToFloat(int16_t i) {
-        float f;
-        f = ((float) i) / (float) 32768;
-        if (f > 1) f = 1;
-        if (f < -1) f = -1;
-        return f;
+        static constexpr float kSampleFullScale = (float) 0x8000;
+        static constexpr float kInverseScale = 1.0f / kSampleFullScale;
+        return (float) i * kInverseScale;
     };
 
 };
