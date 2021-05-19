@@ -148,8 +148,7 @@ oboe::AudioStreamBuilder DuplexEngine::createInputBuilder() {
 
 oboe::AudioStreamBuilder DuplexEngine::createOutputBuilder() {
     return *createDefaultBuilder().setDirection(oboe::Direction::Output)
-            ->setDataCallback(this)
-            ->setErrorCallback(this)
+            ->setCallback(this)
             ->setDeviceId(mOutputDeviceId)
             ->setChannelCount(mOutputChannelCount);
 }
@@ -336,6 +335,8 @@ void DuplexEngine::onErrorBeforeClose(
         oboe::convertToText(oboeStream->getDirection()),
         oboe::convertToText(result)
     );
+
+    mIsPlaying = false;
 }
 
 /**
@@ -354,8 +355,10 @@ void DuplexEngine::onErrorAfterClose(
         oboe::convertToText(result)
     );
 
-    // inRef.close();
-    // if (result == oboe::Result::ErrorDisconnected) {
-    //     restart();
-    // }
+    mIsPlaying = false;
+    closeInputStream();
+    if (result == oboe::Result::ErrorDisconnected) {
+        openStreams();
+        start();
+    }
 }

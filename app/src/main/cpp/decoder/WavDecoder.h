@@ -29,7 +29,7 @@ public:
 
 private:
     bool mIsPlaying = false;
-    float mOutputGain = 0.3;
+    float mOutputGain = 0.95;
 
     int32_t mSampleRate;
 
