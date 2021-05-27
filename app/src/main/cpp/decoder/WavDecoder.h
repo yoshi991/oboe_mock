@@ -54,7 +54,7 @@ private:
     SampleFormat mFormat;
 
     float mOutputGain = 0.5;
-    long int totalReadByte = 0;
+    long int mTotalReadByte = 0;
 
     long calculateBytePosition(long time);
 

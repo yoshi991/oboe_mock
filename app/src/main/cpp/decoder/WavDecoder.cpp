@@ -43,7 +43,7 @@ bool WavDecoder::open() {
     if (mAudioFile == nullptr) return false;
 
     // 読み込み済みのbyte数を元に楽曲も途中から開始する
-    fseek(mAudioFile, totalReadByte, SEEK_SET);
+    fseek(mAudioFile, mTotalReadByte, SEEK_SET);
 
     return true;
 }
@@ -68,7 +68,7 @@ void WavDecoder::setVolume(float volume) {
 }
 
 void WavDecoder::seekPosition(long time) {
-    totalReadByte = calculateBytePosition(time);
+    mTotalReadByte = calculateBytePosition(time);
 }
 
 void WavDecoder::onOutputReady(
@@ -107,13 +107,13 @@ void WavDecoder::onOutputReady(
         }
     }
 
-    totalReadByte += static_cast<uint32_t>(size);
+    mTotalReadByte += static_cast<uint32_t>(size);
     delete[] bgmBuffer;
 }
 
 long WavDecoder::getBGMCurrentTime() {
     return (long) (1000 *
-                   ((float) totalReadByte / (float) (mFormat.sampleRate * (mFormat.pcmFormat >> 3) * mFormat.channels)));
+                   ((float) mTotalReadByte / (float) (mFormat.sampleRate * (mFormat.pcmFormat >> 3) * mFormat.channels)));
 }
 
 long WavDecoder::calculateBytePosition(long time) {
