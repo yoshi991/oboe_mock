@@ -7,11 +7,11 @@
 
 #include "logging_macros.h"
 #include "OboeApiType.h"
-#include "DuplexCallback.h"
 #include "DuplexEngine.h"
 #include "decoder/WavDecoder.h"
+#include "renderer/MicRenderer.h"
 
-class AudioEngine : DuplexCallback {
+class AudioEngine {
 public:
     AudioEngine();
     virtual ~AudioEngine();
@@ -20,25 +20,39 @@ public:
     void setRecordingDeviceId(int32_t deviceId);
     void setPlaybackDeviceId(int32_t deviceId);
     bool setAudioApi(OboeApiType apiType);
-    bool isAAudioRecommended(void);
+    bool isAAudioRecommended();
+    void setAAudioIfRecommended();
     bool setAudioFilePath(const char *filePath);
+    void setBGMVolume(int volume);
+    void setMicVolume(int volume);
+    void setLoopBack(bool isActive);
+    void seekPosition(long time);
 
     bool requestStart();
     bool requestStop();
 
-    void onInputReady(float *inputFloats, int32_t channelCount, int32_t numFrames) override;
-    void onOutputReady(float *outputFloats, int32_t channelCount, int32_t numFrames) override;
-
+    long getBGMCurrentTime();
     bool isBGMPlaying();
 
 private:
     const char *TAG = "[AudioEngine]";
 
-    float mInputGain = 0.95;
-    float mOutputGain = 0.1;
-
     DuplexEngine mDuplexEngine;
     WavDecoder mWavDecoder;
+    MicRenderer mMicRenderer;
+
+    static float calcVolume(int volume) {
+        int vol;
+        if (volume <= 0) {
+            vol = 0;
+        } else if (volume >= 100) {
+            vol = 100;
+        } else {
+            vol = volume;
+        }
+        return float(vol / 100);
+    }
+
 };
 
 #endif //__AUDIO_ENGINE_H__

@@ -34,6 +34,7 @@ Java_com_yoshi991_oboe_LiveEffectEngine_requestStart(
         return JNI_FALSE;
     }
 
+    engine->setLoopBack(true);
     return engine->requestStart() ? JNI_TRUE : JNI_FALSE;
 }
 

@@ -1,15 +1,12 @@
 cmake_minimum_required(VERSION 3.6)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 project(liveEffect LANGUAGES C CXX)
 
 get_filename_component(SAMPLE_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR} ABSOLUTE)
-set (PARSELIB_DIR libs/parselib)
-
-include(${PARSELIB_DIR}/CMakeLists.txt)
 
 include_directories(
     ${CMAKE_CURRENT_LIST_DIR}
@@ -22,12 +19,14 @@ add_library(liveEffect
         AudioEngine.cpp
         DuplexEngine.cpp
         decoder/WavDecoder.cpp
+        renderer/MicRenderer.cpp
     )
 
 target_include_directories(liveEffect
     PRIVATE
         ${SAMPLE_ROOT_DIR}
         ${SAMPLE_ROOT_DIR}/decoder
+        ${SAMPLE_ROOT_DIR}/renderer
         ${SAMPLE_ROOT_DIR}/debug-utils
     )
 
@@ -36,7 +35,6 @@ find_package (oboe REQUIRED CONFIG)
 
 target_link_libraries(liveEffect
     PRIVATE
-        parselib
         oboe::oboe
         android
         atomic

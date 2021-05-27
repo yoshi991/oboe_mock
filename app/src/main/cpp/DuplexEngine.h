@@ -12,7 +12,8 @@ public:
     DuplexEngine() {};
     ~DuplexEngine();
 
-    void setCallback(DuplexCallback *callback);
+    void setInputCallback(DuplexInputCallback *callback);
+    void setOutputCallback(DuplexOutputCallback *callback);
 
     void setSampleRate(int32_t sampleRate);
     void setFramesPerBurst(int32_t framesPerBurst);
@@ -51,7 +52,8 @@ public:
 private:
     const char *TAG = "[DuplexEngine]";
 
-    DuplexCallback *mCallback = nullptr;
+    DuplexInputCallback *mInputCallback = nullptr;
+    DuplexOutputCallback *mOutputCallback = nullptr;
 
     bool mIsPlaying = false;
     bool mIsPlaybackMicrophone = false;
@@ -59,10 +61,10 @@ private:
 
     int32_t mInputDeviceId = oboe::kUnspecified;
     int32_t mOutputDeviceId = oboe::kUnspecified;
-    const oboe::AudioFormat mFormat = oboe::AudioFormat::Float; // for easier processing
-    oboe::AudioApi mAudioApi = oboe::AudioApi::AAudio;
+    const oboe::AudioFormat mFormat = oboe::AudioFormat::I16;
+    oboe::AudioApi mAudioApi = oboe::AudioApi::OpenSLES;
     int32_t mSampleRate = oboe::kUnspecified;
-    const int32_t mOutputChannelCount = oboe::ChannelCount::Mono;
+    const int32_t mOutputChannelCount = oboe::ChannelCount::Stereo;
 
     static constexpr int32_t kNumCallbacksToDrain = 20;
     static constexpr int32_t kNumCallbacksToDiscard = 30;

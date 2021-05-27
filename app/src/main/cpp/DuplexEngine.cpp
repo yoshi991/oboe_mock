@@ -4,8 +4,11 @@ DuplexEngine::~DuplexEngine() {
     closeStreams();
 }
 
-void DuplexEngine::setCallback(DuplexCallback *callback) {
-    mCallback = callback;
+void DuplexEngine::setInputCallback(DuplexInputCallback *callback) {
+    mInputCallback = callback;
+}
+void DuplexEngine::setOutputCallback(DuplexOutputCallback *callback) {
+    mOutputCallback = callback;
 }
 
 void DuplexEngine::setSampleRate(int32_t sampleRate) {
@@ -226,13 +229,9 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
     void *outputData,
     int numOutputFrames
 ) {
-    if (mIsMute) {
-        return oboe::DataCallbackResult::Continue;
-    }
-
     // This code assumes the data format for both streams is Float.
-    float *inputFloats = static_cast<float *>(inputData);
-    float *outputFloats = static_cast<float *>(outputData);
+    int16_t *inputBuffer = static_cast<int16_t *>(inputData);
+    int16_t *outputBuffer = static_cast<int16_t *>(outputData);
 
     // It also assumes the channel count for each stream is the same.
     int32_t samplesPerFrame = outputStream->getChannelCount();
@@ -241,14 +240,16 @@ oboe::DataCallbackResult DuplexEngine::onBothStreamsReady(
 
     // It is possible that there may be fewer input than output samples.
     int32_t samplesToProcess = std::min(numInputSamples, numOutputSamples);
-    if (mCallback) {
-        mCallback->onInputReady(inputFloats, inputStream->getChannelCount(), samplesToProcess);
-        mCallback->onOutputReady(outputFloats, outputStream->getChannelCount(), samplesToProcess);
+    if (mInputCallback) {
+        mInputCallback->onInputReady(inputBuffer, inputStream->getChannelCount(), samplesToProcess);
+    }
+    if (mOutputCallback) {
+        mOutputCallback->onOutputReady(outputBuffer, outputStream->getChannelCount(), samplesToProcess);
     }
 
     if (mIsPlaybackMicrophone) {
         for (int32_t i = 0; i < samplesToProcess; i++) {
-            *outputFloats++ += *inputFloats++;
+            *outputBuffer++ += *inputBuffer++;
         }
     }
 
@@ -270,10 +271,11 @@ oboe::DataCallbackResult DuplexEngine::onAudioReady(
     int32_t numFrames
 ) {
     oboe::DataCallbackResult callbackResult = oboe::DataCallbackResult::Continue;
-    int32_t actualFramesRead = 0;   
+    int32_t actualFramesRead = 0;
+
     // Silence the output.
     int32_t numBytes = numFrames * outputStream->getBytesPerFrame();
-    memset(audioData, 0 /* value */, numBytes); 
+    memset(audioData, 0 /* value */, numBytes);
 
     if (mCountCallbacksToDrain > 0) {
         // Drain the input.
@@ -287,7 +289,7 @@ oboe::DataCallbackResult DuplexEngine::onAudioReady(
             }
             actualFramesRead = result.value();
             totalFramesRead += actualFramesRead;
-        } while (actualFramesRead > 0); 
+        } while (actualFramesRead > 0);
         // Only counts if we actually got some data.
         if (totalFramesRead > 0) {
             mCountCallbacksToDrain--;
@@ -295,6 +297,7 @@ oboe::DataCallbackResult DuplexEngine::onAudioReady(
     } else if (mCountInputBurstsCushion > 0) {
         // Let the input fill up a bit so we are not so close to the write pointer.
         mCountInputBurstsCushion--;
+
     } else if (mCountCallbacksToDiscard > 0) {
         // Ignore. Allow the input to reach to equilibrium with the output.
         oboe::ResultWithValue<int32_t> result = mInputStream->read(
@@ -303,6 +306,7 @@ oboe::DataCallbackResult DuplexEngine::onAudioReady(
             callbackResult = oboe::DataCallbackResult::Stop;
         }
         mCountCallbacksToDiscard--;
+
     } else {
         // Read data into input buffer.
         oboe::ResultWithValue<int32_t> result = mInputStream->read(
@@ -317,6 +321,11 @@ oboe::DataCallbackResult DuplexEngine::onAudioReady(
             );
         }
     }
+
+    if (callbackResult == oboe::DataCallbackResult::Stop) {
+        mInputStream->requestStop();
+    }
+
     return callbackResult;
 }
 

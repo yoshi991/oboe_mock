@@ -6,45 +6,41 @@
 
 #include "logging_macros.h"
 #include "AudioCommon.h"
+#include "DuplexCallback.h"
 
-// parselib includes
-#include "../libs/parselib/stream/MemInputStream.h"
-#include "../libs/parselib/wav/WavStreamReader.h"
-
-using namespace parselib;
-
-class WavDecoder {
+class WavDecoder : public DuplexOutputCallback {
 public:
-    WavDecoder() {};
+    WavDecoder();
     virtual ~WavDecoder() = default;
 
     bool setAudioFilePath(const char *filePath);
+    void setSampleRate(int32_t sampleRate);
+    void setFramesPerBurst(int32_t framesPerBurst);
 
-    bool open(int32_t sampleRate, int32_t framesPerBurst);
+    bool open();
     bool close();
+    void start();
 
-    void render(float *buffer, int32_t channelCount, int32_t numFrames);
+    void setVolume(float volume);
+    void seekPosition(long time);
 
+    void onOutputReady(int16_t *buffer, int32_t channelCount, int32_t numFrames) override;
+
+    long getBGMCurrentTime();
     bool isBGMPlaying();
 
 private:
     bool mIsPlaying = false;
-    float mOutputGain = 0.95;
-
-    int32_t mSampleRate;
 
     const char *mAudioFilePath = nullptr;
     FILE *mAudioFile = nullptr;
 
-    SampleFormat format;
+    SampleFormat mFormat;
 
-    void analyzeWavInfo(int32_t sampleRate, int32_t framesPerBurst);
+    float mOutputGain = 0.5;
+    long int totalReadByte = 0;
 
-    static float shortToFloat(int16_t i) {
-        static constexpr float kSampleFullScale = (float) 0x8000;
-        static constexpr float kInverseScale = 1.0f / kSampleFullScale;
-        return (float) i * kInverseScale;
-    };
+    long calculateBytePosition(long time);
 
 };
 

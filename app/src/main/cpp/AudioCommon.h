@@ -1,26 +1,17 @@
 #ifndef __AUDIO_COMMON_H__
 #define __AUDIO_COMMON_H__
 
-#include <variant>
-
-/*
- * Audio Sample Controls...
- */
-#define AUDIO_SAMPLE_CHANNELS 1
-
-/*
- * Sample Buffer Controls...
- */
-#define RECORD_DEVICE_KICKSTART_BUF_COUNT 2
-#define PLAY_KICKSTART_BUFFER_COUNT 3
-#define DEVICE_SHADOW_BUFFER_QUEUE_LEN 8
-#define BUF_COUNT 32
-
 struct SampleFormat {
     int32_t sampleRate;
     int32_t framesPerBuf;
-    int32_t channels;
-    int32_t pcmFormat;  // 8 bit, 16 bit, 24 bit ...
+    uint16_t channels;
+    uint16_t pcmFormat;  // 8 bit, 16 bit, 24 bit ...
+};
+
+static float shortToFloat(int16_t i) {
+    static constexpr float kSampleFullScale = (float) 0x8000;
+    static constexpr float kInverseScale = 1.0f / kSampleFullScale;
+    return (float) i * kInverseScale;
 };
 
 #endif //__AUDIO_COMMON_H__

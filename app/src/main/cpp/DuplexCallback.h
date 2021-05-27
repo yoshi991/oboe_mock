@@ -1,18 +1,23 @@
 #ifndef __DUPLEX_CALLBACK_H__
 #define __DUPLEX_CALLBACK_H__
 
-class DuplexCallback {
+class DuplexInputCallback {
 public:
-    virtual ~DuplexCallback() = default;
+    virtual ~DuplexInputCallback() = default;
 
     virtual void onInputReady(
-        float *inputFloats, 
+        int16_t *buffer, 
         int32_t channelCount,
         int32_t numFrames
     ) {}
+};
+
+class DuplexOutputCallback {
+public:
+    virtual ~DuplexOutputCallback() = default;
 
     virtual void onOutputReady(
-        float *outputFloats, 
+        int16_t *buffer, 
         int32_t channelCount,
         int32_t numFrames
     ) {}
